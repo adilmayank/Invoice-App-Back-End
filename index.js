@@ -13,10 +13,7 @@ const port = process.env.PORT || 5000
 
 app.use(
   cors({
-    origin: [
-      'http://localhost:3000',
-      'https://adil-invoice-app.netlify.app',
-    ],
+    origin: ['http://localhost:3000', 'https://adil-invoice-app.netlify.app'],
   })
 )
 
@@ -77,13 +74,15 @@ app.post('/api/v1/generateExcel', (req, res) => {
       'template-4'
     )
 
-    pdfCreate(compileResult).then((result) => {
-      if (result) {
-        res.send(result)
-      } else {
-        res.send('Error occured')
-      }
-    })
+    pdfCreate(compileResult)
+      .then((result) => {
+        if (result) {
+          res.send(result)
+        } else {
+          res.send('Error occured')
+        }
+      })
+      .catch((err) => console.log(err))
   } else {
     res.send('Nothing to send')
   }
