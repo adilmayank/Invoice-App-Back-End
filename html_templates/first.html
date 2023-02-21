@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./first.css" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="parent-container">
+      <div class="main-container">
+        <section class="upper-section">
+          <div class="invoice-header-container">
+            <p class="invoice-header">Invoice</p>
+            <div class="customer-detail-container">
+              <p style="font-size: 0.8rem">To</p>
+              <div class="customer-detail">
+                <p class="customer-name">Cartesian Services</p>
+                <p>Zirakpur, Punjab</p>
+                <p>9501210335</p>
+              </div>
+            </div>
+            <div class="invoice-account">
+              <p>Invoice #: 146</p>
+              <p>Invoice Date: 11-02-2023</p>
+              <p>123 456 789</p>
+            </div>
+            <div class="payment-method-container">
+              <p style="font-size: 0.8rem">Payment Method</p>
+              <div class="payment-method">
+                <div class="bank-transfer">
+                  <p>Bank Transfer</p>
+                  <p>Indus Ind</p>
+                </div>
+                <div class="upi-id">
+                  <p>Google Pay</p>
+                  <p>adil@paytm123</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="invoice-info-container">
+            <div class="logo-container">
+              <img class="logo" src="./ideas/logo.png" alt="logo" />
+            </div>
+            <div class="table-container">
+              <table class="table">
+                <thead>
+                  <th>Description</th>
+                  <th>Qty</th>
+                  <th>Unit Price</th>
+                  <th>Total</th>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>{{item.desc}}</td>
+                    <td>{{item.qty}}</td>
+                    <td>{{item.uPrice}}</td>
+                    <td>{{item.total}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="summary-container">
+              <div class="contact-container">
+                <div class="phone">
+                  <img
+                    class="contact-logo"
+                    src="./ideas/phone.png"
+                    alt="phone logo"
+                  />
+                  <span>+91 9501210335</span>
+                </div>
+                <div class="mail">
+                  <img
+                    class="contact-logo"
+                    src="./ideas/mail.png"
+                    alt="phone logo"
+                  />
+                  <span>adilmayank@gmail.com</span>
+                </div>
+                <div class="address">
+                  <img
+                    class="contact-logo"
+                    src="./ideas/map.png"
+                    alt="phone logo"
+                  />
+                  <span>Zirakpur</span>
+                  <span>Punjab</span>
+                </div>
+              </div>
+              <div class="summary">
+                <div class="sub-total">
+                  <p class="big-bold">Sub Total</p>
+                  <p>{{subTotal}}</p>
+                </div>
+                <div class="gst">
+                  <p class="big-bold">GST</p>
+                  <p>{{gst}}</p>
+                </div>
+                <div class="grand-total">
+                  <p class="big-bold">Total</p>
+                  <p>{{grandTotal}}</p>
+                </div>
+              </div>
+            </div>
+            <div class="website-container">
+              <div class="website-url">
+                <a href="https://www.google.com">adilmayank.github.io</a>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="lower-section">
+          <div class="footer-terms">
+            <p class="terms-heading">terms & conditions</p>
+            <div class="terms">
+              <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                Curabitur vitae condimentum nisi. Pellentesque molestie eu nunc
+                non finibus. Duis purus nisi,
+              </p>
+            </div>
+          </div>
+          <div class="footer-thanks">
+            <p class="thanks">Thanks for your business!</p>
+          </div>
+        </section>
+      </div>
+    </div>
+  </body>
+</html>

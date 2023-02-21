@@ -1,0 +1,115 @@
+<html lang='en'>
+  <head>
+    <meta charset='UTF-8' />
+    <meta http-equiv='X-UA-Compatible' content='IE=edge' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <title>Document</title>
+    <!-- <link rel="stylesheet" href="./template1.css" /> -->
+    <style>
+      html, body { margin: 0; padding: 0; height: 100vh; width: 100vw;
+      min-height: 100%; } .parent-container { display: flex; justify-content:
+      center; align-items: center; margin: 0; padding: 1rem; height: 100%; /*
+      background-color: rgba(227, 176, 104, 0.703); */ } .main-container {
+      display: grid; grid-template-rows: 2fr 4fr 1fr 1fr; height: 100%; width:
+      100%; /* background-color: rgba(240, 255, 255, 0.418); */ }
+      .header-container { display: grid; grid-template-columns: 20% 80%;
+      align-items: center; } .img-container { margin: 0.5rem; display: flex;
+      justify-content: center; align-items: center; width: 100%; }
+      .img-container > img { width: 50%; } .header-info-container { display:
+      flex; flex-direction: column; width: 100%; height: 50%; justify-content:
+      center; } .owner-info, .customer-info { display: flex; align-items:
+      center; justify-content: end; height: 100%; margin-right: 1rem; }
+      .invoice-data-container { height: 100%; width: 100%; display: flex;
+      justify-content: center; align-items: start; } .invoice-data { margin:
+      0.5rem; border: 1px solid black; width: 100%; display: flex;
+      justify-content: center; } .invoice-table { height: 100%; width: 100%;
+      margin: 0.7rem; } .table-header, tr, td { border: 1px solid black; }
+      .table-row { height: 2rem; } tr { text-align: center; }
+      .invoice-summary-container { height: 100%; width: 100%; display: grid;
+      grid-template-columns: 50% 50%; } .signature-container { display: grid;
+      max-height: 90%; grid-template-rows: 70% 15% 15%; justify-content: start;
+      align-items: center; flex-direction: column; } .signature-container > p {
+      display: flex; align-items: center; justify-content: center; margin: 0;
+      font-size: 0.7rem; } .signature-container > img { width: 100%; scale: 0.5;
+      } .summary { display: flex; justify-content: center; align-items: center;
+      } .terms-container { font-size: 0.8rem; }
+    </style>
+  </head>
+  <body>
+    <div class='parent-container'>
+      <div class='main-container'>
+        <div class='header-container'>
+          <div class='img-container'>
+            <img src='data:image/jpeg;base64,{{{logo}}}' alt='logo' />
+          </div>
+          <div class='header-info-container'>
+            <div class='owner-info'>{{owner}}</div>
+            <div class='customer-info'>{{customer}}</div>
+            <div class='customer-info'>{{date}}</div>
+          </div>
+        </div>
+        <div class='invoice-data-container'>
+          <div class='invoice-data'>
+            <table class='invoice-table'>
+              <thead class='table-header'>
+                <th>S No.</th>
+                <th>Code</th>
+                <th>Description</th>
+                <th>Unit Price</th>
+                <th>Qty</th>
+                <th>Total Amount</th>
+              </thead>
+              <tbody class='table-body'>
+                {{#each orders}}
+                  <tr class='table-row'>
+                    <td>{{this.sno}}</td>
+                    <td>{{this.code}}</td>
+                    <td>{{this.desc}}</td>
+                    <td>{{this.unitPrice}}</td>
+                    <td>{{this.qty}}</td>
+                    <td>{{this.totalPrice}}</td>
+                  </tr>
+                {{/each}}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan='4'>Total</td>
+                  <td colspan='1'>{{totalQty}}</td>
+                  <td colspan='1'>{{grandTotal}}</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+        <div class='invoice-summary-container'>
+          <div class='signature-container'>
+            <img
+              src='data:image/jpeg;base64,{{{signature}}}'
+              alt='customer signature'
+            />
+            <p>Adil Mayank</p>
+            <p>Managing Director</p>
+          </div>
+          <div class='summary'>
+            <p>Grand Total: {{grandTotal}}</p>
+          </div>
+        </div>
+        <div class='footer-container'>
+          <ul class='terms-container'>
+            <span>Following are the terms and conditions:</span>
+            <li class='terms-item'>
+              In case of damage, return must be requested within 15 working
+              days.
+            </li>
+            <li class='terms-item'>
+              In case of missing, reporting must be done within 3 working days
+            </li>
+            <li class='terms-item'>
+              In case of returning, 30% restocking fees will be charged.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
