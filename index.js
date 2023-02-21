@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require('express')
 const app = express()
 const {
@@ -8,13 +9,13 @@ const {
 } = require('./generatePdf')
 const cors = require('cors')
 
-const port = 5000
+const port = process.env.PORT || 5000
 
-app.use(
-  cors({
-    origin: 'http://localhost:3000',
-  })
-)
+// app.use(
+//   cors({
+//     origin: 'http://localhost:3000',
+//   })
+// )
 
 app.use(express.json())
 app.use(express.static(`${__dirname}/public`))
