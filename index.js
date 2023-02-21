@@ -15,7 +15,7 @@ app.use(
   cors({
     origin: [
       'http://localhost:3000',
-      'https://adil-invoice-app.netlify.app/',
+      'https://adil-invoice-app.netlify.app',
     ],
   })
 )
