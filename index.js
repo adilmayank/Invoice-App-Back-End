@@ -15,7 +15,7 @@ app.use(
   cors({
     origin: [
       'http://localhost:3000',
-      'https://invoice-app-backend-gkni.onrender.com',
+      'https://adil-invoice-app.netlify.app/',
     ],
   })
 )
