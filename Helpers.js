@@ -89,22 +89,22 @@ function aggregateOrders2(dataFromFrontEnd) {
     }
   )
 
-  const dateString = new Date().toDateString('dd/MM/yyyy')
-  const grandTotalWithGst = (collective.totalAmount * (1 + gst / 100)).toFixed(
-    2
-  )
+  const date = new Date().toDateString('dd/MM/yyyy')
+  const grandTotal = collective.totalAmount
+  const gstTotal = (grandTotal * gst) / 100
+  const grandTotalWithGst = grandTotal + gstTotal
 
   const data = {
     owner: 'Grace Windows and Doors PTY LTD',
     customer: name,
     abn,
     email,
-    date: dateString,
+    date,
     orders: updatedOrders,
     totalQty: collective.totalQuantity,
-    grandTotal: collective.totalAmount,
-    grandTotalWithGst: grandTotalWithGst,
-    gst,
+    grandTotal: grandTotal.toFixed(2),
+    grandTotalWithGst: grandTotalWithGst.toFixed(2),
+    gstTotal: gstTotal.toFixed(2),
     logo,
     phoneLogo,
     emailLogo,
