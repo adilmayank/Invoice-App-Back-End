@@ -33,7 +33,7 @@ function compileWithOrders(inputOrders, templateName) {
   return compiledResult
 }
 
-function compileWithOrders2 (dataFromFrontEnd, templateName) {
+function compileWithOrders2(dataFromFrontEnd, templateName) {
   const templatePath = `${__dirname}/templates/${templateName}.hbs`
   const file = fs.readFileSync(templatePath, 'utf-8')
 
@@ -69,7 +69,7 @@ async function pdfCreate(template) {
     displayHeaderFooter: false,
     printBackground: true,
     height: '10000px',
-    path: `${__dirname}/my-invoice.pdf`,
+    // path: `${__dirname}/my-invoice.pdf`,
   })
   await browser.close()
   const buff = Buffer.from(pdf.buffer)
