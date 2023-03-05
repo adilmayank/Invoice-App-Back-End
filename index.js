@@ -9,7 +9,25 @@ const {
 } = require('./generatePdf')
 const cors = require('cors')
 
+const mongoose = require('mongoose')
+
+const {
+  CustomersRoutes: customerRoutes,
+  ProductsRoutes: productRoutes,
+  AccountUserRoutes: accountUserRoutes,
+  InvoicesRoutes: invoicesRoutes,
+  EstimatesRoutes: estimatesRoutes,
+} = require('./Routes/index')
+
 const port = process.env.PORT || 5000
+
+mongoose.set('strictQuery', false)
+const userName = encodeURIComponent(process.env.MONGODB_USERNAME)
+const password = encodeURIComponent(process.env.MONGODB_PASSWORD)
+const cluster = process.env.MONGODB_CLUSTER
+const dbName = process.env.MONGODB_DB_NAME
+
+const mongoDb = `mongodb+srv://${userName}:${password}@${cluster}.mongodb.net/${dbName}?retryWrites=true&w=majority`
 
 app.use(
   cors({
@@ -88,10 +106,34 @@ app.post('/api/v1/generateExcel', (req, res) => {
   }
 })
 
+// To handle Customer Routing and Logic
+app.use(customerRoutes)
+
+// To handle Product Routing and Logic
+app.use(productRoutes)
+
+// To handle Account User Routing and Logic
+app.use(accountUserRoutes)
+
+// To handle Invoices Routing and Logic
+app.use(invoicesRoutes)
+
+// To handle Estimates Routing and Logic
+app.use(estimatesRoutes)
+
 app.get('*', (req, res) => {
   res.send('No route exists')
 })
 
-app.listen(port, () => {
-  console.log(`Now listening to port ${port}`)
+async function dbConnect() {
+  await mongoose.connect(mongoDb)
+}
+
+app.listen(port, async () => {
+  try {
+    await dbConnect()
+    console.log(`Now listening to port ${port}`)
+  } catch (error) {
+    console.log(`Error: ${error}`)
+  }
 })
