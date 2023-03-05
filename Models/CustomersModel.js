@@ -18,9 +18,14 @@ const CustomerSchema = new Schema({
     maxLength: 20,
     default: this.address_line_city,
   },
-  email: { type: String, required: true, },
+  email: { type: String, required: true },
   business_identity_type: { type: String, required: true },
   business_identity_number: { type: String, required: true, unique: true },
+  payment_terms: {
+    type: String,
+    enum: ['COD', 'CBD', 'EOM', 'CIA', 'PIA', '7D', '14D', '1M'],
+    default: 'CIA',
+  },
 })
 
 module.exports = new mongoose.model('Customers', CustomerSchema)
