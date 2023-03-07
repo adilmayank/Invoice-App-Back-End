@@ -1,3 +1,4 @@
 const CustomerModel = require('./CustomersModel')
+const InvoiceModel = require('./InvoiceModel')
 
-module.exports = { CustomerModel }
+module.exports = { CustomerModel, InvoiceModel }

@@ -3,25 +3,25 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const CustomerSchema = new Schema({
-  business_name: { type: String, required: true, maxLength: 50 },
-  contact_person_name: { type: String, required: true, maxLength: 50 },
-  address_line_1: { type: String, required: true, maxLength: 100 },
-  address_line_2: { type: String, maxLength: 50 },
-  address_line_zip_code: { type: Number, required: true, maxLength: 10 },
-  address_line_city: { type: String, required: true, maxLength: 20 },
-  address_line_state: { type: String, required: true, maxLength: 20 },
-  phone_number: { type: Number, required: true },
-  phone_country_code: { type: String, required: true },
-  place_of_delivery: {
+  businessName: { type: String, required: true, maxLength: 50 },
+  contactPersonName: { type: String, required: true, maxLength: 50 },
+  addressLine1: { type: String, required: true, maxLength: 100 },
+  addressLine2: { type: String, maxLength: 50 },
+  addressLineZipCode: { type: Number, required: true, maxLength: 10 },
+  addressLineCity: { type: String, required: true, maxLength: 20 },
+  addressLineState: { type: String, required: true, maxLength: 20 },
+  phoneNumber: { type: Number, required: true },
+  phoneCountryCode: { type: String, required: true },
+  placeOfDelivery: {
     type: String,
     required: false,
     maxLength: 20,
-    default: this.address_line_city,
+    default: this.addressLineCity,
   },
   email: { type: String, required: true },
-  business_identity_type: { type: String, required: true },
-  business_identity_number: { type: String, required: true, unique: true },
-  payment_terms: {
+  businessIdentityType: { type: String, required: true },
+  businessIdentityNumber: { type: String, required: true, unique: true, dropDups: true },
+  paymentTerms: {
     type: String,
     enum: ['COD', 'CBD', 'EOM', 'CIA', 'PIA', '7D', '14D', '1M'],
     default: 'CIA',
