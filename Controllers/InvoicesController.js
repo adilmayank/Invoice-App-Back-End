@@ -1,10 +1,12 @@
 const { InvoiceModel, CustomerModel } = require('../Models')
 
+// Need to send proper status codes for all the responses
+
 exports.getAllInvoices = (req, res) => {
-  const allRecords = InvoiceModel.find({}).populate(
-    'invoiceTo',
-    'businessName paymentTerms'
-  )
+  const allRecords = InvoiceModel.find({}).populate({
+    path: 'refQuotation',
+    populate: { path: 'quotationTo' },
+  })
 
   allRecords
     .then((result) => {
@@ -18,10 +20,10 @@ exports.getAllInvoices = (req, res) => {
 
 exports.getSingleInvoice = (req, res) => {
   const invoiceId = req.params.id
-  const allRecords = InvoiceModel.find({ _id: invoiceId }).populate(
-    'invoiceTo',
-    'businessName paymentTerms'
-  )
+  const allRecords = InvoiceModel.find({ _id: invoiceId }).populate({
+    path: 'refQuotation',
+    populate: { path: 'quotationTo' },
+  })
 
   allRecords
     .then((result) => {
@@ -38,89 +40,15 @@ exports.updateSingleInvoice = (req, res) => {
 
   const allRecords = InvoiceModel.findOneAndUpdate(
     { _id: invoiceId },
-    { ...data, lastModifiedOn: Date.now() }
+    { ...data, modifiedOn: Date.now() }
   )
   allRecords
     .then((result) => {
-      res.json({ data: result })
+      res.status(200).json({ data: result })
     })
     .catch((err) => {
-      res.json({ err })
+      res.status(500).json({ error: err.errors.name })
     })
-}
-
-exports.createInvoice = async (req, res) => {
-  const {
-    invoiceTo: invoiceTo,
-    paymentTerms: paymentTerms,
-    taxComponentTypes: taxComponentTypes,
-    taxComponentRates: taxComponentRates,
-    taxComponentValue: taxComponentValue,
-    subTotal: subTotal,
-    taxTotal: taxTotal,
-    discountTypes: discountTypes,
-    discountValues: discountValues,
-    previousDeposits: previousDeposits,
-    grandTotal: grandTotal,
-    grandTotalInWords: grandTotalInWords,
-  } = req.body
-
-  const invoiceNumber = await createInvoiceNumber()
-
-  const newRecord = new InvoiceModel({
-    invoiceTo,
-    paymentTerms,
-    invoiceNumber,
-    taxComponentTypes,
-    taxComponentRates,
-    taxComponentValue,
-    subTotal,
-    taxTotal,
-    discountTypes,
-    discountValues,
-    previousDeposits,
-    grandTotal,
-    grandTotalInWords,
-  })
-
-  newRecord
-    .save()
-    .then((result) => {
-      res.status(201).json({ data: result })
-    })
-    .catch((err) => {
-      res.status(500).json({ error: err })
-    })
-}
-
-const createInvoiceNumber = async () => {
-  let result
-  await InvoiceModel.countDocuments({})
-    .then((count) => {
-      result = `INV-${10000 + count + 1}`
-    })
-    .catch((err) => {
-      throw new Error(err)
-    })
-  return result
-}
-
-const updateInvoiceStatus = async (id, status) => {
-  const queryResult = await InvoiceModel.findByIdAndUpdate(
-    id,
-    { invoiceStatus: status, lastModifiedOn: Date.now() },
-    { new: true }
-  )
-  return queryResult
-}
-
-const updatePaymentStatus = async (id, status) => {
-  const queryResult = await InvoiceModel.findByIdAndUpdate(
-    id,
-    { paymentStatus: status, lastModifiedOn: Date.now() },
-    { new: true }
-  )
-  return queryResult
 }
 
 exports.convertInvoiceToEstimate = (req, res) => {
@@ -131,14 +59,15 @@ exports.submitInvoice = (req, res) => {
   const invoiceId = req.body.id
   updateInvoiceStatus(invoiceId, 'submitted')
     .then((result) => {
-      res.json({ data: result })
+      res.status(200).json({ data: result })
     })
     .catch((err) => {
-      throw new Error(err)
+      res.status(500).json({ error: err.errors.name })
     })
 }
 
 exports.downloadInvoice = (req, res) => {
+  console.log(req.body)
   res.send('Download Invoice : Not Implemented')
 }
 
@@ -146,10 +75,10 @@ exports.sendInvoice = (req, res) => {
   const invoiceId = req.body.id
   updateInvoiceStatus(invoiceId, 'sent')
     .then((result) => {
-      res.json({ data: result, msg: 'Invoice sent to customer.' })
+      res.status(200).json({ data: result, msg: 'Invoice sent to customer.' })
     })
     .catch((err) => {
-      throw new Error(err)
+      res.status(500).json({ error: err.errors.name })
     })
 }
 
@@ -157,13 +86,13 @@ exports.submitAndSendInvoice = (req, res) => {
   const invoiceId = req.body.id
   updateInvoiceStatus(invoiceId, 'sent')
     .then((result) => {
-      res.json({
+      res.status(200).json({
         data: result,
         msg: 'Invoice submitted and sent to the customer.',
       })
     })
     .catch((err) => {
-      throw new Error(err)
+      res.status(500).json({ error: err.errors.name })
     })
 }
 
@@ -171,14 +100,34 @@ exports.updatePaymentStatus = (req, res) => {
   const paymentStatus = req.body.paymentStatus
   const invoiceId = req.body.invoiceId
 
-  updatePaymentStatus(invoiceId, paymentStatus)
+  InvoiceModel.findByIdAndUpdate(
+    invoiceId,
+    { paymentStatus: paymentStatus, modifiedOn: Date.now() },
+    { new: true }
+  )
     .then((result) => {
-      res.json({
+      res.status(200).json({
         data: result,
         msg: `Invoice payment Status : ${result.paymentStatus}`,
       })
     })
     .catch((err) => {
-      throw new Error(err)
+      res.status(500).json({ error: err.errors.name })
+    })
+}
+
+exports.updateInvoiceStatus = (req, res) => {
+  const { invoiceId, status } = req.query
+
+  InvoiceModel.findByIdAndUpdate(
+    invoiceId,
+    { invoiceStatus: status, modifiedOn: Date.now() },
+    { runValidators: true, new: true }
+  )
+    .then((result) => {
+      res.status(201).json({ data: result })
+    })
+    .catch((err) => {
+      res.status(500).json({ error: err.errors.name })
     })
 }

@@ -26,6 +26,8 @@ const CustomerSchema = new Schema({
     enum: ['COD', 'CBD', 'EOM', 'CIA', 'PIA', '7D', '14D', '1M'],
     default: 'CIA',
   },
+  createdOn: {type: Date, default: Date.now()},
+  modifiedOn: {type: Date, default: Date.now()},
 })
 
 module.exports = new mongoose.model('Customers', CustomerSchema)

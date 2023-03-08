@@ -2,12 +2,12 @@ const CustomersController = require('./CustomersController')
 const ProductsController = require('./ProductsController')
 const AccountUserController = require('./AccountUserController')
 const InvoicesController = require('./InvoicesController')
-const EstimatesController = require('./EstimatesController')
+const QuotationsController = require('./QuotationsController')
 
 module.exports = {
   CustomersController,
   ProductsController,
   AccountUserController,
   InvoicesController,
-  EstimatesController
+  QuotationsController,
 }

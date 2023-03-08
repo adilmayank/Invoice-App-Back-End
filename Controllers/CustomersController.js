@@ -7,7 +7,7 @@ exports.getAllCustomers = (req, res) => {
       res.status(200).json({ data: result })
     })
     .catch((err) => {
-      res.status(500).json({ error: err })
+      res.status(500).json({ error: err.errors.name })
     })
 }
 
@@ -20,19 +20,22 @@ exports.getSingleCustomer = (req, res) => {
       res.status(200).json({ data: result })
     })
     .catch((err) => {
-      res.status(500).json({ error: err })
+      res.status(500).json({ error: err.errors.name })
     })
 }
 
 exports.updateSingleCustomer = (req, res) => {
-  const data = req.body.data
-  const customerId = req.body._id
-  CustomerModel.findByIdAndUpdate(customerId, data)
+  const { customerId, data } = req.body
+  CustomerModel.findByIdAndUpdate(
+    customerId,
+    { ...data, modifiedOn: Date.now() },
+    { runValidators: true, new: true }
+  )
     .then((result) => {
       res.status(200).json({ data: result })
     })
     .catch((err) => {
-      res.status(500).json({ error: err })
+      res.status(500).json({ error: err.errors.name })
     })
 }
 
@@ -75,6 +78,6 @@ exports.createCustomer = (req, res) => {
       res.status(201).json({ data: result })
     })
     .catch((err) => {
-      res.status(500).json({ error: err })
+      res.status(500).json({ error: err.errors.name })
     })
 }

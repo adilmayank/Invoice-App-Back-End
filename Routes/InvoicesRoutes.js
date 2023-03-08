@@ -17,37 +17,40 @@ router.patch(
   InvoicesController.updateSingleInvoice
 )
 
-// Create and return single invoice
-router.post('/api/v1/invoice/createInvoice', InvoicesController.createInvoice)
-
 // Convert to estimate
-router.post(
+router.get(
   '/api/v1/invoice/convertToEstimate',
   InvoicesController.convertInvoiceToEstimate
 )
 
 // Submit invoice
-router.post('/api/v1/invoice/submitInvoice', InvoicesController.submitInvoice)
+router.get('/api/v1/invoice/submitInvoice', InvoicesController.submitInvoice)
 
 // Download invoice
-router.post(
+router.get(
   '/api/v1/invoice/downloadInvoice',
   InvoicesController.downloadInvoice
 )
 
 // Send invoice
-router.post('/api/v1/invoice/sendInvoice', InvoicesController.sendInvoice)
+router.get('/api/v1/invoice/sendInvoice', InvoicesController.sendInvoice)
 
+// Payment status will be updated as a result of 
 // Update Payment Status
-router.post(
+router.get(
   '/api/v1/invoice/updatePaymentStatus',
   InvoicesController.updatePaymentStatus
 )
 
 // Submit and Send invoice
-router.post(
+router.get(
   '/api/v1/invoice/submitAndSendInvoice',
   InvoicesController.submitAndSendInvoice
 )
+
+// Add payments records
+// Implmentation left
+
+
 
 module.exports = router

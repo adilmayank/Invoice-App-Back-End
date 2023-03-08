@@ -16,7 +16,7 @@ const {
   ProductsRoutes: productRoutes,
   AccountUserRoutes: accountUserRoutes,
   InvoicesRoutes: invoicesRoutes,
-  EstimatesRoutes: estimatesRoutes,
+  QuotationsRoutes: quotationRoutes,
 } = require('./Routes/index')
 
 const port = process.env.PORT || 5000
@@ -119,7 +119,7 @@ app.use(accountUserRoutes)
 app.use(invoicesRoutes)
 
 // To handle Estimates Routing and Logic
-app.use(estimatesRoutes)
+app.use(quotationRoutes)
 
 app.get('*', (req, res) => {
   res.send('No route exists')
