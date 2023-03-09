@@ -13,7 +13,7 @@ exports.getAllQuotations = (req, res) => {
     })
     .catch((err) => {
       console.log(err)
-      res.status(500).json({ error: err })
+      res.status(500).json({ error: err.errors.name })
     })
 }
 
@@ -30,7 +30,7 @@ exports.getSingleQuotation = (req, res) => {
     })
     .catch((err) => {
       console.log(err)
-      res.status(500).json({ error: err })
+      res.status(500).json({ error: err.errors.name })
     })
 }
 
@@ -68,7 +68,7 @@ exports.createQuotation = async (req, res) => {
       res.status(201).json({ data: result })
     })
     .catch((err) => {
-      res.status(500).json({ error: err })
+      res.status(500).json({ error: err.errors.name })
     })
 }
 
@@ -100,7 +100,7 @@ exports.updateQuotationStatus = (req, res) => {
       res.status(200).json({ data: data })
     })
     .catch((err) => {
-      res.status(500).json({ error: err.errors.name })
+      res.status(500).json({ error: err.errors.name.errors.name })
     })
 }
 
@@ -109,7 +109,7 @@ exports.downloadQuotation = (req, res) => {
 }
 
 exports.convertToInvoice = async (req, res) => {
-  const { quotationId } = req.params
+  const { quotationId } = req.body
   let quotationResult = await QuotationModel.findById(quotationId)
   quotationResult.quotationStatus = 'accepted'
   const { grandTotal, grandTotalInWords } = await quotationResult.save()
@@ -125,7 +125,7 @@ exports.convertToInvoice = async (req, res) => {
       res.status(201).json({ data: result })
     })
     .catch((err) => {
-      res.status(500).json({ error: err })
+      res.status(500).json({ error: err.errors.name })
     })
 }
 

@@ -51,13 +51,17 @@ exports.updateSingleInvoice = (req, res) => {
     })
 }
 
-exports.convertInvoiceToEstimate = (req, res) => {
-  res.send('Convert To Estimate : Not Implemented')
+exports.convertInvoiceToQuotation = (req, res) => {
+  res.send('Convert To Quotation : Not Implemented')
 }
 
 exports.submitInvoice = (req, res) => {
   const invoiceId = req.body.id
-  updateInvoiceStatus(invoiceId, 'submitted')
+  InvoiceModel.findByIdAndUpdate(
+    invoiceId,
+    { invoiceStatus: 'submitted', modifiedOn: Date.now() },
+    { runValidators: true, new: true }
+  )
     .then((result) => {
       res.status(200).json({ data: result })
     })
@@ -67,15 +71,26 @@ exports.submitInvoice = (req, res) => {
 }
 
 exports.downloadInvoice = (req, res) => {
-  console.log(req.body)
   res.send('Download Invoice : Not Implemented')
 }
 
 exports.sendInvoice = (req, res) => {
   const invoiceId = req.body.id
-  updateInvoiceStatus(invoiceId, 'sent')
+
+  // Step 1 - Fetch invoice data from db
+  // Step 2 - Format data from query in an appropriate format
+  // Step 3 - Call Email sender service to send email to customer
+  // Step 4a - Upon success, update queried document's invoiceStatus to "send"
+  // Step 4b - Upon failure, send the error with response body.
+
+  // Below is an ad-hoc way to send the invoice to customer, which is not right !
+  InvoiceModel.findByIdAndUpdate(
+    invoiceId,
+    { invoiceStatus: 'sent', modifiedOn: Date.now() },
+    { runValidators: true, new: true }
+  )
     .then((result) => {
-      res.status(200).json({ data: result, msg: 'Invoice sent to customer.' })
+      res.status(200).json({ data: result })
     })
     .catch((err) => {
       res.status(500).json({ error: err.errors.name })
@@ -84,48 +99,55 @@ exports.sendInvoice = (req, res) => {
 
 exports.submitAndSendInvoice = (req, res) => {
   const invoiceId = req.body.id
-  updateInvoiceStatus(invoiceId, 'sent')
-    .then((result) => {
-      res.status(200).json({
-        data: result,
-        msg: 'Invoice submitted and sent to the customer.',
-      })
-    })
-    .catch((err) => {
-      res.status(500).json({ error: err.errors.name })
-    })
-}
-
-exports.updatePaymentStatus = (req, res) => {
-  const paymentStatus = req.body.paymentStatus
-  const invoiceId = req.body.invoiceId
-
   InvoiceModel.findByIdAndUpdate(
     invoiceId,
-    { paymentStatus: paymentStatus, modifiedOn: Date.now() },
-    { new: true }
-  )
-    .then((result) => {
-      res.status(200).json({
-        data: result,
-        msg: `Invoice payment Status : ${result.paymentStatus}`,
-      })
-    })
-    .catch((err) => {
-      res.status(500).json({ error: err.errors.name })
-    })
-}
-
-exports.updateInvoiceStatus = (req, res) => {
-  const { invoiceId, status } = req.query
-
-  InvoiceModel.findByIdAndUpdate(
-    invoiceId,
-    { invoiceStatus: status, modifiedOn: Date.now() },
+    { invoiceStatus: 'sent', modifiedOn: Date.now() },
     { runValidators: true, new: true }
   )
     .then((result) => {
-      res.status(201).json({ data: result })
+      res.status(200).json({ data: result, msg: "Quotation sent to the cusotmer" })
+    })
+    .catch((err) => {
+      res.status(500).json({ error: err.errors.name })
+    })
+}
+
+exports.removePaymentDetails = async (req, res) => {
+  const { invoiceId, paymentId } = req.body
+
+  await InvoiceModel.findById(invoiceId)
+    .then((queryResult) => {
+      const filteredPayments = queryResult.previousDeposits.filter((item) => {
+        if (!item._id.equals(paymentId)) {
+          return item
+        }
+      })
+      queryResult.previousDeposits = [...filteredPayments]
+      queryResult.modifiedOn = Date.now()
+      return queryResult.save()
+    })
+    .then((result) => {
+      res.status(200).json({ data: result })
+    })
+    .catch((err) => {
+      console.log(err)
+      res.status(500).json({ error: err })
+    })
+}
+
+exports.addPaymentDetails = async (req, res) => {
+  const { paymentDetails, invoiceId } = req.body
+  paymentDetails.paymentDate = new Date(paymentDetails.paymentDate)
+
+  await InvoiceModel.findById(invoiceId)
+    .then((queryResult) => {
+      queryResult.previousDeposits.push({ ...paymentDetails })
+      // queryResult.previousDeposits = []
+      queryResult.modifiedOn = Date.now()
+      return queryResult.save()
+    })
+    .then((result) => {
+      res.status(200).json({ data: result })
     })
     .catch((err) => {
       res.status(500).json({ error: err.errors.name })
