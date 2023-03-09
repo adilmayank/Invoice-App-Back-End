@@ -27,7 +27,7 @@ router.patch(
 )
 
 // Update Quotation Status
-router.get(
+router.patch(
   '/api/v1/quotation/updateQuotationStatus',
   QuotationsController.updateQuotationStatus
 )
@@ -39,8 +39,8 @@ router.get(
 )
 
 // Convert To Invoice
-router.get(
-  '/api/v1/quotation/convertToInvoice/:quotationId',
+router.patch(
+  '/api/v1/quotation/convertToInvoice',
   QuotationsController.convertToInvoice
 )
 
