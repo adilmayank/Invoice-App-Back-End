@@ -17,40 +17,40 @@ router.patch(
   InvoicesController.updateSingleInvoice
 )
 
-// Convert to estimate
-router.get(
-  '/api/v1/invoice/convertToEstimate',
-  InvoicesController.convertInvoiceToEstimate
+// convert to estimate
+router.patch(
+  '/api/v1/invoice/convertToQuotation',
+  InvoicesController.convertInvoiceToQuotation
 )
 
-// Submit invoice
-router.get('/api/v1/invoice/submitInvoice', InvoicesController.submitInvoice)
+// submit invoice
+router.patch('/api/v1/invoice/submitInvoice', InvoicesController.submitInvoice)
 
-// Download invoice
+// download invoice
 router.get(
   '/api/v1/invoice/downloadInvoice',
   InvoicesController.downloadInvoice
 )
 
-// Send invoice
-router.get('/api/v1/invoice/sendInvoice', InvoicesController.sendInvoice)
+// send invoice
+router.patch('/api/v1/invoice/sendInvoice', InvoicesController.sendInvoice)
 
-// Payment status will be updated as a result of 
-// Update Payment Status
-router.get(
-  '/api/v1/invoice/updatePaymentStatus',
-  InvoicesController.updatePaymentStatus
+// Add payment detail
+router.patch(
+  '/api/v1/invoice/addPaymentDetail',
+  InvoicesController.addPaymentDetails
 )
 
-// Submit and Send invoice
-router.get(
+// Remove payment detail
+router.patch(
+  '/api/v1/invoice/removePaymentDetail',
+  InvoicesController.removePaymentDetails
+)
+
+// submit and Send invoice
+router.patch(
   '/api/v1/invoice/submitAndSendInvoice',
   InvoicesController.submitAndSendInvoice
 )
-
-// Add payments records
-// Implmentation left
-
-
 
 module.exports = router
