@@ -17,7 +17,10 @@ const {
   AccountUserRoutes: accountUserRoutes,
   InvoicesRoutes: invoicesRoutes,
   QuotationsRoutes: quotationRoutes,
-} = require('./Routes/index')
+  TransactionHistoryRoutes: transactionHistoryRoutes,
+} = require('./Routes')
+
+const { ApplicationLevelAuthentication } = require('./Middlewares')
 
 const port = process.env.PORT || 5000
 
@@ -106,6 +109,9 @@ app.post('/api/v1/generateExcel', (req, res) => {
   }
 })
 
+// Middleware to check whether a user is authenticated or not.
+app.use(ApplicationLevelAuthentication)
+
 // To handle Customer Routing and Logic
 app.use(customerRoutes)
 
@@ -118,8 +124,11 @@ app.use(accountUserRoutes)
 // To handle Invoices Routing and Logic
 app.use(invoicesRoutes)
 
-// To handle Estimates Routing and Logic
+// To handle Quotations Routing and Logic
 app.use(quotationRoutes)
+
+// To handle Transaction History Routing and Logic
+app.use(transactionHistoryRoutes)
 
 app.get('*', (req, res) => {
   res.send('No route exists')
