@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const { QuotationsController } = require('../Controllers/index')
+const { QuotationAggregate } = require('../Middlewares')
 
 // Get all quotations
 router.get(
@@ -11,13 +12,14 @@ router.get(
 // Get single quotation
 router.get(
   '/api/v1/quotation/getSingleQuotation/:quotationId',
-  QuotationsController.getSingleQuotation
+  QuotationsController.getSingleQuotation,
+  QuotationAggregate
 )
 
 // Create new Quotation
 router.post(
   '/api/v1/quotation/createQuotation',
-  QuotationsController.createQuotation
+  QuotationsController.createQuotation,
 )
 
 // Update single quotation
@@ -39,8 +41,8 @@ router.get(
 )
 
 // Convert To Invoice
-router.get(
-  '/api/v1/quotation/convertToInvoice/:quotationId',
+router.patch(
+  '/api/v1/quotation/convertToInvoice',
   QuotationsController.convertToInvoice
 )
 

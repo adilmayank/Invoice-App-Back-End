@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const { InvoicesController } = require('../Controllers/index')
+const { InvoiceAggregate } = require('../Middlewares')
 
 // get all invoices
 router.get('/api/v1/invoice/getAllInvoices', InvoicesController.getAllInvoices)
@@ -8,7 +9,8 @@ router.get('/api/v1/invoice/getAllInvoices', InvoicesController.getAllInvoices)
 // get single invoice
 router.get(
   '/api/v1/invoice/getSingleInvoice/:id',
-  InvoicesController.getSingleInvoice
+  InvoicesController.getSingleInvoice,
+  InvoiceAggregate
 )
 
 // update single invoice
@@ -26,6 +28,10 @@ router.patch(
 // submit invoice
 router.patch('/api/v1/invoice/submitInvoice', InvoicesController.submitInvoice)
 
+
+// remove payment hisory item
+router.patch('/api/v1/invoice/removePaymentHistoryDetail', InvoicesController.removePaymentHistoryItem)
+
 // download invoice
 router.get(
   '/api/v1/invoice/downloadInvoice',
@@ -34,18 +40,6 @@ router.get(
 
 // send invoice
 router.patch('/api/v1/invoice/sendInvoice', InvoicesController.sendInvoice)
-
-// Add payment detail
-router.patch(
-  '/api/v1/invoice/addPaymentDetail',
-  InvoicesController.addPaymentDetails
-)
-
-// Remove payment detail
-router.patch(
-  '/api/v1/invoice/removePaymentDetail',
-  InvoicesController.removePaymentDetails
-)
 
 // submit and Send invoice
 router.patch(

@@ -27,7 +27,14 @@ const QuotationSchema = new Schema({
   },
   quotationStatus: {
     type: String,
-    enum: ['accepted', 'rejected', 'notSent', 'sent', 'underNegotiation'],
+    enum: [
+      'accepted',
+      'rejected',
+      'notSent',
+      'sent',
+      'underNegotiation',
+      'convertedToInvoice',
+    ],
     default: 'notSent',
   },
   modifiedOn: { type: Date, default: Date.now() },

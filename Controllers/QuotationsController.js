@@ -18,7 +18,7 @@ exports.getAllQuotations = (req, res) => {
     })
 }
 
-exports.getSingleQuotation = (req, res) => {
+exports.getSingleQuotation = (req, res, next) => {
   const { quotationId } = req.params
   const singleRecord = QuotationModel.findById(quotationId)
     .populate({
@@ -29,7 +29,9 @@ exports.getSingleQuotation = (req, res) => {
 
   singleRecord
     .then((result) => {
-      res.status(200).json({ data: { result } })
+      res.locals.responseData = result
+      next()
+      // res.status(200).json({ data: { result } })
     })
     .catch((err) => {
       console.log(err)
@@ -38,10 +40,17 @@ exports.getSingleQuotation = (req, res) => {
 }
 
 exports.updateSingleQuotation = (req, res) => {
-  const { quotationId, quotationTo, products, taxComponents } = req.body
+  const { quotationId, quotationTo, products, taxComponents, quotationStatus } =
+    req.body
   QuotationModel.findByIdAndUpdate(
     quotationId,
-    { quotationTo, products, taxComponents, modifiedOn: Date.now() },
+    {
+      quotationTo,
+      products,
+      taxComponents,
+      quotationStatus,
+      modifiedOn: Date.now(),
+    },
     { runValidators: true, new: true }
   )
     .then((result) => {
@@ -123,9 +132,9 @@ exports.downloadQuotation = (req, res) => {
 }
 
 exports.convertToInvoice = async (req, res) => {
-  const { quotationId } = req.params
+  const { quotationId } = req.body
   let quotationResult = await QuotationModel.findById(quotationId)
-  quotationResult.quotationStatus = 'accepted'
+  quotationResult.quotationStatus = 'convertedToInvoice'
   await quotationResult.save()
   const invoiceNumber = await createInvoiceNumber()
   new InvoiceModel({
@@ -137,7 +146,7 @@ exports.convertToInvoice = async (req, res) => {
       res.status(201).json({ data: result })
     })
     .catch((err) => {
-      res.status(500).json({ error: err.errors.name })
+      res.status(500).json({ error: err })
     })
 }
 
