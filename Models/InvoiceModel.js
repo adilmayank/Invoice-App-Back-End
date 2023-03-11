@@ -25,8 +25,6 @@ const InvoiceSchema = new Schema({
   previousDeposits: [
     { amount: { type: Number, min: 0 }, paymentDate: { type: Date } },
   ],
-  invoiceTotal: { type: Number, min: 0, required: true },
-  grandTotalInWords: { type: String, required: true },
   // paymentHistory: [{ type: Schema.Types.ObjectId, ref: 'PaymentTransactions' }],
   invoiceStatus: {
     type: String,
