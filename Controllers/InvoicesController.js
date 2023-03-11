@@ -2,6 +2,7 @@ const { InvoiceModel, CustomerModel } = require('../Models')
 
 // Need to send proper status codes for all the responses
 
+// Get all invoices need much less data than get single invoice, need to reduce the data later
 exports.getAllInvoices = (req, res) => {
   const allRecords = InvoiceModel.find({}).populate({
     path: 'refQuotation',
@@ -23,7 +24,11 @@ exports.getSingleInvoice = (req, res) => {
   const allRecords = InvoiceModel.find({ _id: invoiceId }).populate({
     path: 'refQuotation',
     populate: { path: 'quotationTo' },
+    populate: { path: 'products.product' },
   })
+  // .populate({
+  //   path: "products.product"
+  // })
 
   allRecords
     .then((result) => {
@@ -105,7 +110,9 @@ exports.submitAndSendInvoice = (req, res) => {
     { runValidators: true, new: true }
   )
     .then((result) => {
-      res.status(200).json({ data: result, msg: "Quotation sent to the cusotmer" })
+      res
+        .status(200)
+        .json({ data: result, msg: 'Quotation sent to the cusotmer' })
     })
     .catch((err) => {
       res.status(500).json({ error: err.errors.name })
