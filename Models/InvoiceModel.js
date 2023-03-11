@@ -19,13 +19,10 @@ const InvoiceSchema = new Schema({
   discountComponent: [
     {
       discountType: { type: String },
-      discountValue: { type: Number },
+      discountValue: { type: Number, min: 1 },
     },
   ],
-  previousDeposits: [
-    { amount: { type: Number, min: 0 }, paymentDate: { type: Date } },
-  ],
-  // paymentHistory: [{ type: Schema.Types.ObjectId, ref: 'PaymentTransactions' }],
+  paymentHistory: [{ type: Schema.Types.ObjectId, ref: 'TransactionHistory' }],
   invoiceStatus: {
     type: String,
     enum: ['submitted', 'sent', 'notSubmitted'],
