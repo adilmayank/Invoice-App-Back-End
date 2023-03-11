@@ -7,7 +7,7 @@ exports.getAllCustomers = (req, res) => {
       res.status(200).json({ data: result })
     })
     .catch((err) => {
-      res.status(500).json({ error: err.errors.name })
+      res.status(500).json({ error: err })
     })
 }
 
@@ -20,7 +20,7 @@ exports.getSingleCustomer = (req, res) => {
       res.status(200).json({ data: result })
     })
     .catch((err) => {
-      res.status(500).json({ error: err.errors.name })
+      res.status(500).json({ error: err })
     })
 }
 
@@ -35,7 +35,7 @@ exports.updateSingleCustomer = (req, res) => {
       res.status(200).json({ data: result })
     })
     .catch((err) => {
-      res.status(500).json({ error: err.errors.name })
+      res.status(500).json({ error: err })
     })
 }
 
@@ -78,6 +78,7 @@ exports.createCustomer = (req, res) => {
       res.status(201).json({ data: result })
     })
     .catch((err) => {
-      res.status(500).json({ error: err.errors.name })
+      console.log(err)
+      res.status(500).json({ error: err })
     })
 }
