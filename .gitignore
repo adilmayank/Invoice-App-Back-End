@@ -2,3 +2,4 @@
 my-invoice.pdf
 node_modules
 /.cache/
+.VSCodeCounter
