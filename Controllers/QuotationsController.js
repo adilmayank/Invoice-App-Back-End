@@ -4,8 +4,9 @@ exports.getAllQuotations = (req, res) => {
   const allRecords = QuotationModel.find({})
     .populate({
       path: 'quotationTo',
+      select: 'businessName contactPersonName email paymentTerms',
     })
-    .populate({ path: 'products' })
+    .populate({ path: 'products.product' })
 
   allRecords
     .then((result) => {
@@ -13,39 +14,52 @@ exports.getAllQuotations = (req, res) => {
     })
     .catch((err) => {
       console.log(err)
-      res.status(500).json({ error: err.errors.name })
+      res.status(500).json({ error: err })
     })
 }
 
 exports.getSingleQuotation = (req, res) => {
   const { quotationId } = req.params
-  const singleRecord = QuotationModel.find({ _id: quotationId }).populate(
-    'quotationTo',
-    'businessName'
-  )
+  const singleRecord = QuotationModel.findById(quotationId)
+    .populate({
+      path: 'quotationTo',
+      select: 'businessName contactPersonName email paymentTerms',
+    })
+    .populate({ path: 'products.product' })
 
   singleRecord
     .then((result) => {
-      res.status(200).json({ data: result })
+      res.status(200).json({ data: { result } })
     })
     .catch((err) => {
       console.log(err)
-      res.status(500).json({ error: err.errors.name })
+      res.status(500).json({ error: err })
     })
 }
 
 exports.updateSingleQuotation = (req, res) => {
-  res.send(`Update Single Quotation : Not Implemented`)
+  const { quotationId, quotationTo, products, taxComponents } = req.body
+  QuotationModel.findByIdAndUpdate(
+    quotationId,
+    { quotationTo, products, taxComponents, modifiedOn: Date.now() },
+    { runValidators: true, new: true }
+  )
+    .then((result) => {
+      res.status(200).json({ data: result })
+    })
+    .catch((err) => {
+      res.status(500).json({ error: err })
+    })
 }
 
 exports.createQuotation = async (req, res) => {
   const {
     quotationTo,
     taxComponents,
-    subTotal,
-    taxTotal,
-    grandTotal,
-    grandTotalInWords,
+    // subTotal,
+    // taxTotal,
+    // grandTotal,
+    // grandTotalInWords,
     products,
   } = req.body
 
@@ -55,10 +69,10 @@ exports.createQuotation = async (req, res) => {
     quotationTo,
     quotationNumber,
     taxComponents,
-    subTotal,
-    taxTotal,
-    grandTotal,
-    grandTotalInWords,
+    // subTotal,
+    // taxTotal,
+    // grandTotal,
+    // grandTotalInWords,
     products,
   })
 
@@ -109,16 +123,14 @@ exports.downloadQuotation = (req, res) => {
 }
 
 exports.convertToInvoice = async (req, res) => {
-  const { quotationId } = req.body
+  const { quotationId } = req.params
   let quotationResult = await QuotationModel.findById(quotationId)
   quotationResult.quotationStatus = 'accepted'
-  const { grandTotal, grandTotalInWords } = await quotationResult.save()
+  await quotationResult.save()
   const invoiceNumber = await createInvoiceNumber()
   new InvoiceModel({
     refQuotation: quotationId,
     invoiceNumber: invoiceNumber,
-    invoiceTotal: grandTotal,
-    grandTotalInWords,
   })
     .save()
     .then((result) => {

@@ -39,8 +39,8 @@ router.get(
 )
 
 // Convert To Invoice
-router.patch(
-  '/api/v1/quotation/convertToInvoice',
+router.get(
+  '/api/v1/quotation/convertToInvoice/:quotationId',
   QuotationsController.convertToInvoice
 )
 

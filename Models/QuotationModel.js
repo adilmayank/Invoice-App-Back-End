@@ -11,16 +11,20 @@ const QuotationSchema = new Schema({
   },
   quotationNumber: { type: String, index: true, required: true },
   quotationDate: { type: Date, required: true, default: Date.now() },
-  products: [{ type: Schema.Types.ObjectId, ref: 'Product', required: true }],
+  products: [
+    {
+      product: {
+        type: Schema.Types.ObjectId,
+        ref: 'Product',
+        required: true,
+      },
+      quantity: { type: Number, required: true },
+    },
+  ],
   taxComponents: {
     taxName: [{ type: String, required: true }],
     taxRate: [{ type: Number, required: true, min: 0, max: 100 }],
-    taxValue: [{ type: Number, required: true, min: 0 }],
   },
-  subTotal: { type: Number, required: true, min: 0 },
-  taxTotal: { type: Number, required: true, min: 0 },
-  grandTotal: { type: Number, required: true, min: 0 },
-  grandTotalInWords: { type: String, required: true },
   quotationStatus: {
     type: String,
     enum: ['accepted', 'rejected', 'notSent', 'sent', 'underNegotiation'],
