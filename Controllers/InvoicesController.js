@@ -163,7 +163,7 @@ exports.sendInvoice = (req, res) => {
 }
 
 exports.submitAndSendInvoice = (req, res) => {
-  const invoiceId = req.body.id
+  const { invoiceId } = req.body
   InvoiceModel.findByIdAndUpdate(
     invoiceId,
     { invoiceStatus: 'sent', modifiedOn: Date.now() },
