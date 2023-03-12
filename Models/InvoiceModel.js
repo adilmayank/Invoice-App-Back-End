@@ -4,7 +4,7 @@ const Customer = require('./CustomersModel')
 const { Schema } = mongoose
 
 const InvoiceSchema = new Schema({
-  refQuotation: {
+  quotationRefId: {
     type: Schema.Types.ObjectId,
     required: true,
     ref: 'Quotation',
@@ -22,7 +22,9 @@ const InvoiceSchema = new Schema({
       discountValue: { type: Number, min: 1 },
     },
   ],
-  paymentHistory: [{ type: Schema.Types.ObjectId, ref: 'TransactionHistory' }],
+  previousPayments: [
+    { type: Schema.Types.ObjectId, ref: 'TransactionHistory' },
+  ],
   invoiceStatus: {
     type: String,
     enum: ['submitted', 'sent', 'notSubmitted'],
@@ -33,6 +35,8 @@ const InvoiceSchema = new Schema({
     enum: ['unpaid', 'paid', 'partiallyPaid'],
     default: 'unpaid',
   },
+  invoiceSentOn: { type: Date, default: Date.now() },
+  createdOn: { type: Date, default: Date.now() },
   modifiedOn: { type: Date, default: Date.now() },
 })
 

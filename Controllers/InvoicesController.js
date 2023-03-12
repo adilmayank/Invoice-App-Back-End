@@ -10,7 +10,7 @@ const {
 // Get all invoices need much less data than get single invoice, need to reduce the data later
 exports.getAllInvoices = (req, res) => {
   const allRecords = InvoiceModel.find({}).populate({
-    path: 'refQuotation',
+    path: 'quotationRefId',
     populate: { path: 'quotationTo' },
   })
 
@@ -25,19 +25,16 @@ exports.getAllInvoices = (req, res) => {
 }
 
 exports.getSingleInvoice = (req, res, next) => {
-  const invoiceId = req.params.id
-  const allRecords = InvoiceModel.find({ _id: invoiceId })
+  const { invoiceId } = req.params
+  const allRecords = InvoiceModel.findById(invoiceId)
     .populate({
-      path: 'refQuotation',
+      path: 'quotationRefId',
       populate: { path: 'quotationTo' },
       populate: { path: 'products.product' },
     })
     .populate({
-      path: 'paymentHistory',
+      path: 'previousPayments',
     })
-  // .populate({
-  //   path: "products.product"
-  // })
 
   allRecords
     .then((result) => {
@@ -63,7 +60,7 @@ exports.updateSingleInvoice = (req, res) => {
       res.status(200).json({ data: result })
     })
     .catch((err) => {
-      res.status(500).json({ error: err.errors.name })
+      res.status(500).json({ error: err })
     })
 }
 
@@ -96,7 +93,7 @@ exports.convertInvoiceToQuotation = async (req, res) => {
 }
 
 exports.submitInvoice = (req, res) => {
-  const invoiceId = req.body.id
+  const { invoiceId } = req.body
   InvoiceModel.findByIdAndUpdate(
     invoiceId,
     { invoiceStatus: 'submitted', modifiedOn: Date.now() },
@@ -106,21 +103,26 @@ exports.submitInvoice = (req, res) => {
       res.status(200).json({ data: result })
     })
     .catch((err) => {
-      res.status(500).json({ error: err.errors.name })
+      res.status(500).json({ error: err })
     })
 }
 
-exports.removePaymentHistoryItem = (req, res) => {
+exports.removeTransactionDetail = (req, res) => {
   const { invoiceId, transactionDetailId } = req.body
   console.log(invoiceId, transactionDetailId)
 
   InvoiceModel.findById(invoiceId).then((result) => {
     result.paymentHistory.pull(transactionDetailId)
     TransactionHistoryModel.findByIdAndRemove(transactionDetailId)
-      .then((result2) => {
-        result.save().then(() => {
-          res.status(200).json({ data: result })
-        })
+      .then(() => {
+        result
+          .save()
+          .then(() => {
+            res.status(200).json({ data: result, modifiedOn: Date.now() })
+          })
+          .catch((err) => {
+            res.status(500).json({ error: err })
+          })
       })
       .catch((err) => {
         res.status(500).json({ error: err })
@@ -134,7 +136,7 @@ exports.downloadInvoice = (req, res) => {
 }
 
 exports.sendInvoice = (req, res) => {
-  const invoiceId = req.body.id
+  const { invoiceId } = req.body
 
   // Step 1 - Fetch invoice data from db
   // Step 2 - Format data from query in an appropriate format
@@ -145,14 +147,18 @@ exports.sendInvoice = (req, res) => {
   // Below is an ad-hoc way to send the invoice to customer, which is not right !
   InvoiceModel.findByIdAndUpdate(
     invoiceId,
-    { invoiceStatus: 'sent', modifiedOn: Date.now() },
+    {
+      invoiceStatus: 'sent',
+      invoiceSentOn: Date.now(),
+      modifiedOn: Date.now(),
+    },
     { runValidators: true, new: true }
   )
     .then((result) => {
       res.status(200).json({ data: result })
     })
     .catch((err) => {
-      res.status(500).json({ error: err.errors.name })
+      res.status(500).json({ error: err })
     })
 }
 
@@ -169,6 +175,6 @@ exports.submitAndSendInvoice = (req, res) => {
         .json({ data: result, msg: 'Quotation sent to the cusotmer' })
     })
     .catch((err) => {
-      res.status(500).json({ error: err.errors.name })
+      res.status(500).json({ error: err })
     })
 }

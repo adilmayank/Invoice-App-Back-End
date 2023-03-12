@@ -37,6 +37,8 @@ const QuotationSchema = new Schema({
     ],
     default: 'notSent',
   },
+  emailSentOn: { type: Date, default: Date.now() },
+  createdOn: { type: Date, default: Date.now() },
   modifiedOn: { type: Date, default: Date.now() },
 })
 

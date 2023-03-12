@@ -7,7 +7,7 @@ router.get('/api/v1/product/getAllProducts', ProductsController.getAllProducts)
 
 // Get single product
 router.get(
-  '/api/v1/product/getSingleProduct/:id',
+  '/api/v1/product/getProduct/:productId',
   ProductsController.getSingleProduct
 )
 
@@ -15,6 +15,12 @@ router.get(
 router.patch(
   '/api/v1/product/updateProduct',
   ProductsController.updateSingleProduct
+)
+
+// Delete Single Route
+router.patch(
+  '/api/v1/product/deleteProduct',
+  ProductsController.deleteSingleProduct
 )
 
 // Create a product

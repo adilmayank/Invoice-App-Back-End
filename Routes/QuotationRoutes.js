@@ -11,7 +11,7 @@ router.get(
 
 // Get single quotation
 router.get(
-  '/api/v1/quotation/getSingleQuotation/:quotationId',
+  '/api/v1/quotation/getQuotation/:quotationId',
   QuotationsController.getSingleQuotation,
   QuotationAggregate
 )
@@ -19,7 +19,7 @@ router.get(
 // Create new Quotation
 router.post(
   '/api/v1/quotation/createQuotation',
-  QuotationsController.createQuotation,
+  QuotationsController.createQuotation
 )
 
 // Update single quotation
@@ -38,6 +38,12 @@ router.patch(
 router.get(
   '/api/v1/quotation/downloadQuotation/:quotationId',
   QuotationsController.downloadQuotation
+)
+
+// Send Quotation
+router.patch(
+  '/api/v1/quotation/sendQuotation',
+  QuotationsController.sendQuotation
 )
 
 // Convert To Invoice

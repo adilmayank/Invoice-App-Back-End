@@ -13,8 +13,8 @@ exports.getAllTransactionDetails = (req, res) => {
 
 // Get single transaction detail
 exports.getSingleTransactionDetail = (req, res) => {
-  const { transactionDetailId } = req.body
-  TransactionHistoryModel.findById(transactionDetailId)
+  const { transactionId } = req.body
+  TransactionHistoryModel.findById(transactionId)
     .then((result) => {
       res.status(200).json({ data: result })
     })
@@ -26,11 +26,13 @@ exports.getSingleTransactionDetail = (req, res) => {
 // Add/Create transaction detail
 exports.addTransactionDetail = async (req, res) => {
   // Fetching data from request body
-  const { invoiceId: invoice, amount, remittanceId, type } = req.body
+  const { data } = req.body
+
+  const { invoiceRefId, amount, remittanceId, type } = data
 
   // Constructing and saving a new transaction detail in db
   const newTransactionDetail = await new TransactionHistoryModel({
-    invoice,
+    invoiceRefId,
     amount,
     remittanceId,
     type,
@@ -52,5 +54,22 @@ exports.addTransactionDetail = async (req, res) => {
 
 // Update transaction detail
 exports.updateTransactionDetail = (req, res) => {
-  res.send('Update transaction detail not implemented')
+  const { transactionId, data } = req.body
+
+  for (key of Object.keys(data)) {
+    if (key == 'invoiceRefId') {
+      delete data[key]
+    }
+  }
+
+  TransactionHistoryModel.findByIdAndUpdate(transactionId, {
+    ...data,
+    modifiedOn: Date.now(),
+  })
+    .then((result) => {
+      res.status(200).json({ data: result })
+    })
+    .catch((err) => {
+      res.status(500).json({ error: err })
+    })
 }

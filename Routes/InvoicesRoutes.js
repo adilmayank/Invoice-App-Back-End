@@ -8,7 +8,7 @@ router.get('/api/v1/invoice/getAllInvoices', InvoicesController.getAllInvoices)
 
 // get single invoice
 router.get(
-  '/api/v1/invoice/getSingleInvoice/:id',
+  '/api/v1/invoice/getInvoice/:invoiceId',
   InvoicesController.getSingleInvoice,
   InvoiceAggregate
 )
@@ -19,7 +19,7 @@ router.patch(
   InvoicesController.updateSingleInvoice
 )
 
-// convert to estimate
+// convert to quotation
 router.patch(
   '/api/v1/invoice/convertToQuotation',
   InvoicesController.convertInvoiceToQuotation
@@ -28,9 +28,11 @@ router.patch(
 // submit invoice
 router.patch('/api/v1/invoice/submitInvoice', InvoicesController.submitInvoice)
 
-
-// remove payment hisory item
-router.patch('/api/v1/invoice/removePaymentHistoryDetail', InvoicesController.removePaymentHistoryItem)
+// remove transaction detail item
+router.patch(
+  '/api/v1/invoice/removeTransactionDetail',
+  InvoicesController.removeTransactionDetail
+)
 
 // download invoice
 router.get(

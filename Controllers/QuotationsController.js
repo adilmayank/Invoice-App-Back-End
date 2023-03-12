@@ -62,15 +62,8 @@ exports.updateSingleQuotation = (req, res) => {
 }
 
 exports.createQuotation = async (req, res) => {
-  const {
-    quotationTo,
-    taxComponents,
-    // subTotal,
-    // taxTotal,
-    // grandTotal,
-    // grandTotalInWords,
-    products,
-  } = req.body
+  const { data } = req.body
+  const { quotationTo, products, taxComponents } = data
 
   const quotationNumber = await createQuotationNumber()
 
@@ -78,10 +71,6 @@ exports.createQuotation = async (req, res) => {
     quotationTo,
     quotationNumber,
     taxComponents,
-    // subTotal,
-    // taxTotal,
-    // grandTotal,
-    // grandTotalInWords,
     products,
   })
 
@@ -91,7 +80,7 @@ exports.createQuotation = async (req, res) => {
       res.status(201).json({ data: result })
     })
     .catch((err) => {
-      res.status(500).json({ error: err.errors.name })
+      res.status(500).json({ error: err })
     })
 }
 
@@ -109,7 +98,10 @@ const createQuotationNumber = async () => {
 }
 
 exports.updateQuotationStatus = (req, res) => {
-  const { quotationId, status } = req.query
+  const { quotationId, data } = req.body
+
+  // changing quotation status is just indicative of a state change.
+  const { status } = data
 
   // promise chaining, finally one "catch" to catch errors, most probably validation error in this case ;)
   const queryResult = QuotationModel.findById(quotationId)
@@ -123,12 +115,31 @@ exports.updateQuotationStatus = (req, res) => {
       res.status(200).json({ data: data })
     })
     .catch((err) => {
-      res.status(500).json({ error: err.errors.name.errors.name })
+      res.status(500).json({ error: err })
     })
 }
 
 exports.downloadQuotation = (req, res) => {
-  res.send(`Download Quotation : Not Implemented`)
+  res.status(200).json({ data: 'Download Quotation is not implemented.' })
+}
+
+exports.sendQuotation = (req, res) => {
+  const { quotationId } = req.body
+
+  // Create quoatation pdf
+  // Call some asynchronous service to send the quotation to client
+  // After email is successfully send to the client,
+  // Update emailSentOn to current datetime then,
+  // Send response to back to caller
+
+  QuotationModel.findByIdAndUpdate(
+    quotationId,
+    {
+      quotationStatus: 'sent',
+      emailSentOn: Date.now(),
+    },
+    { new: true, runValidators: true }
+  )
 }
 
 exports.convertToInvoice = async (req, res) => {

@@ -12,7 +12,7 @@ exports.getAllCustomers = (req, res) => {
 }
 
 exports.getSingleCustomer = (req, res) => {
-  const customerId = req.params.id
+  const { customerId } = req.params
 
   const singleRecord = CustomerModel.find({ _id: customerId })
   singleRecord
@@ -26,9 +26,26 @@ exports.getSingleCustomer = (req, res) => {
 
 exports.updateSingleCustomer = (req, res) => {
   const { customerId, data } = req.body
+
+  const dataToSubmit = {
+    businessName: data.businessName,
+    contactPersonName: data.contactPersonName,
+    addressLine1: data.addressLine1,
+    addressLine2: data.addressLine2,
+    addressLineZipCode: data.addressLineZipCode,
+    addressLineCity: data.addressLineCity,
+    addressLineState: data.addressLineState,
+    phoneNumber: data.phoneNumber,
+    phoneCountryCode: data.phoneCountryCode,
+    placeOfDelivery: data.placeOfDelivery,
+    email: data.email,
+    businessIdentityType: data.businessIdentityType,
+    businessIdentityNumber: data.businessIdentityNumber,
+  }
+
   CustomerModel.findByIdAndUpdate(
     customerId,
-    { ...data, modifiedOn: Date.now() },
+    { ...dataToSubmit, modifiedOn: Date.now() },
     { runValidators: true, new: true }
   )
     .then((result) => {
@@ -39,7 +56,21 @@ exports.updateSingleCustomer = (req, res) => {
     })
 }
 
-exports.createCustomer = (req, res) => {
+exports.deleteSingleCustomer = (req, res) => {
+  const { customerId } = req.body
+
+  CustomerModel.findByIdAndRemove(customerId)
+    .then((result) => {
+      res.status(200).json({ data: result })
+    })
+    .catch((err) => {
+      res.status(500).json({ error: err })
+    })
+}
+
+exports.createSingleCustomer = (req, res) => {
+  const { data } = req.body
+
   const {
     businessName: businessName,
     contactPersonName: contactPersonName,
@@ -54,7 +85,7 @@ exports.createCustomer = (req, res) => {
     email: email,
     businessIdentityType: businessIdentityType,
     businessIdentityNumber: businessIdentityNumber,
-  } = req.body
+  } = data
 
   const newRecord = new CustomerModel({
     businessName,

@@ -4,19 +4,19 @@ const { TransactionHistoryController } = require('../Controllers')
 
 // Get all transactions
 router.get(
-  '/api/v1/transactions/getAllTransactionDetails',
+  '/api/v1/transactionHistoryDetail/getAllTransactionDetails',
   TransactionHistoryController.getAllTransactionDetails
 )
 
 // Get single transaction
 router.get(
-  '/api/v1/transactions/getSingleTransactionDetail/:id',
+  '/api/v1/transactionHistoryDetail/getTransactionDetail/:transactionId',
   TransactionHistoryController.getSingleTransactionDetail
 )
 
 // Update Single Transaction
 router.patch(
-  '/api/v1/transactions/updateTransactionDetail',
+  '/api/v1/transactionHistoryDetail/updateTransactionDetail',
   TransactionHistoryController.updateTransactionDetail
 )
 

@@ -6,30 +6,30 @@ exports.getAllProducts = (req, res) => {
       res.status(200).json({ data: result })
     })
     .catch((err) => {
-      res.status(500).json({ error: err.errors.name })
+      res.status(500).json({ error: err })
     })
 }
 
 exports.getSingleProduct = (req, res) => {
-  const { id: productId } = req.params
+  const { productId } = req.params
   ProductModel.findById(productId)
     .then((result) => {
       res.status(200).json({ data: result })
     })
     .catch((err) => {
-      res.status(500).json({ error: err.errors.name })
+      res.status(500).json({ error: err })
     })
 }
 
 exports.updateSingleProduct = (req, res) => {
-  const { id, data } = req.body
+  const { productId, data } = req.body
   for (key of Object.keys(data)) {
     if (data[key] === undefined || data[key] === null) {
       delete data[key]
     }
   }
   ProductModel.findByIdAndUpdate(
-    id,
+    productId,
     { ...data, modifiedOn: Date.now() },
     { runValidators: true, new: true }
   )
@@ -37,7 +37,19 @@ exports.updateSingleProduct = (req, res) => {
       res.status(201).json({ data: result })
     })
     .catch((err) => {
-      res.status(500).json({ error: err.errors.name })
+      res.status(500).json({ error: err })
+    })
+}
+
+exports.deleteSingleProduct = (req, res) => {
+  const { productId } = req.body
+
+  ProductModel.findByIdAndRemove(productId)
+    .then((result) => {
+      res.status(201).json({ data: result })
+    })
+    .catch((err) => {
+      res.status(500).json({ error: err })
     })
 }
 
@@ -50,6 +62,6 @@ exports.createProduct = (req, res) => {
       res.status(201).json({ data: result })
     })
     .catch((err) => {
-      res.status(500).json({ Error: err.errors.description })
+      res.status(500).json({ error: err })
     })
 }

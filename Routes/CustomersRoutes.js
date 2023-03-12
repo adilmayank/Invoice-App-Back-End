@@ -10,20 +10,26 @@ router.get(
 
 // Get Single customer
 router.get(
-  '/api/v1/customer/getSingleCustomer/:id',
+  '/api/v1/customer/getCustomer/:customerId',
   CustomersController.getSingleCustomer
 )
 
 // Update single customer
 router.patch(
-  '/api/v1/customer/updateCustomer/',
+  '/api/v1/customer/updateCustomer',
   CustomersController.updateSingleCustomer
+)
+
+// Delete single customer
+router.patch(
+  '/api/v1/customer/deleteCustomer',
+  CustomersController.deleteSingleCustomer
 )
 
 // Create a customer
 router.post(
   '/api/v1/customer/createCustomer',
-  CustomersController.createCustomer
+  CustomersController.createSingleCustomer
 )
 
 module.exports = router
