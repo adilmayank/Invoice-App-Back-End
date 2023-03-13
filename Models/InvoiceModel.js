@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const Customer = require('./CustomersModel')
+const Customer = require('./CustomerModel')
 
 const { Schema } = mongoose
 
@@ -22,9 +22,7 @@ const InvoiceSchema = new Schema({
       discountValue: { type: Number, min: 1 },
     },
   ],
-  previousPayments: [
-    { type: Schema.Types.ObjectId, ref: 'TransactionHistory' },
-  ],
+  previousPayments: [{ type: Schema.Types.ObjectId, ref: 'TransactionDetail' }],
   invoiceStatus: {
     type: String,
     enum: ['submitted', 'sent', 'notSubmitted'],

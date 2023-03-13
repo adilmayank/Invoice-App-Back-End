@@ -1,52 +1,49 @@
 const express = require('express')
 const router = express.Router()
-const { InvoicesController } = require('../Controllers/index')
+const { InvoiceController } = require('../Controllers')
 const { InvoiceAggregate } = require('../Middlewares')
 
 // get all invoices
-router.get('/api/v1/invoice/getAllInvoices', InvoicesController.getAllInvoices)
+router.get('/api/v1/invoice/getAllInvoices', InvoiceController.getAllInvoices)
 
 // get single invoice
 router.get(
   '/api/v1/invoice/getInvoice/:invoiceId',
-  InvoicesController.getSingleInvoice,
+  InvoiceController.getSingleInvoice,
   InvoiceAggregate
 )
 
 // update single invoice
 router.patch(
   '/api/v1/invoice/updateInvoice',
-  InvoicesController.updateSingleInvoice
+  InvoiceController.updateSingleInvoice
 )
 
 // convert to quotation
 router.patch(
   '/api/v1/invoice/convertToQuotation',
-  InvoicesController.convertInvoiceToQuotation
+  InvoiceController.convertInvoiceToQuotation
 )
 
 // submit invoice
-router.patch('/api/v1/invoice/submitInvoice', InvoicesController.submitInvoice)
+router.patch('/api/v1/invoice/submitInvoice', InvoiceController.submitInvoice)
 
 // remove transaction detail item
 router.patch(
   '/api/v1/invoice/removeTransactionDetail',
-  InvoicesController.removeTransactionDetail
+  InvoiceController.removeTransactionDetail
 )
 
 // download invoice
-router.get(
-  '/api/v1/invoice/downloadInvoice',
-  InvoicesController.downloadInvoice
-)
+router.get('/api/v1/invoice/downloadInvoice', InvoiceController.downloadInvoice)
 
 // send invoice
-router.patch('/api/v1/invoice/sendInvoice', InvoicesController.sendInvoice)
+router.patch('/api/v1/invoice/sendInvoice', InvoiceController.sendInvoice)
 
 // submit and Send invoice
 router.patch(
   '/api/v1/invoice/submitAndSendInvoice',
-  InvoicesController.submitAndSendInvoice
+  InvoiceController.submitAndSendInvoice
 )
 
 module.exports = router

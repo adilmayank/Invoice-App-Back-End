@@ -101,13 +101,13 @@ exports.updateQuotationStatus = (req, res) => {
   const { quotationId, data } = req.body
 
   // changing quotation status is just indicative of a state change.
-  const { status } = data
+  const { quotationStatus } = data
 
   // promise chaining, finally one "catch" to catch errors, most probably validation error in this case ;)
   const queryResult = QuotationModel.findById(quotationId)
   queryResult
     .then((result) => {
-      result.quotationStatus = status
+      result.quotationStatus = quotationStatus
       result.modifiedOn = Date.now()
       return result.save()
     })
@@ -171,4 +171,8 @@ const createInvoiceNumber = async () => {
       throw new Error(err)
     })
   return result
+}
+
+exports.deleteQuotation = (req, res) => {
+  res.status(200).json({ data: 'Deleted Quotation is not implemented yet' })
 }

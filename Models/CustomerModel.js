@@ -30,4 +30,4 @@ const CustomerSchema = new Schema({
   modifiedOn: {type: Date, default: Date.now()},
 })
 
-module.exports = new mongoose.model('Customers', CustomerSchema)
+module.exports = new mongoose.model('Customer', CustomerSchema)

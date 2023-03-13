@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const Customer = require('./CustomersModel')
+const Customer = require('./CustomerModel')
 
 const { Schema } = mongoose
 

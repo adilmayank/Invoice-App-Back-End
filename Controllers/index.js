@@ -1,15 +1,15 @@
-const CustomersController = require('./CustomersController')
-const ProductsController = require('./ProductsController')
+const CustomerController = require('./CustomerController')
+const ProductController = require('./ProductController')
 const AccountUserController = require('./AccountUserController')
-const InvoicesController = require('./InvoicesController')
-const QuotationsController = require('./QuotationsController')
-const TransactionHistoryController = require('./TransactionHistoryController')
+const InvoiceController = require('./InvoiceController')
+const QuotationController = require('./QuotationController')
+const TransactionDetailController = require('./TransactionDetailController')
 
 module.exports = {
-  CustomersController,
-  ProductsController,
+  CustomerController,
+  ProductController,
   AccountUserController,
-  InvoicesController,
-  QuotationsController,
-  TransactionHistoryController,
+  InvoiceController,
+  QuotationController,
+  TransactionDetailController,
 }

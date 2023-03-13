@@ -2,7 +2,7 @@ const {
   InvoiceModel,
   CustomerModel,
   QuotationModel,
-  TransactionHistoryModel,
+  TransactionDetailModel,
 } = require('../Models')
 
 // Need to send proper status codes for all the responses
@@ -113,7 +113,7 @@ exports.removeTransactionDetail = (req, res) => {
 
   InvoiceModel.findById(invoiceId).then((result) => {
     result.paymentHistory.pull(transactionDetailId)
-    TransactionHistoryModel.findByIdAndRemove(transactionDetailId)
+    TransactionDetailModel.findByIdAndRemove(transactionDetailId)
       .then(() => {
         result
           .save()

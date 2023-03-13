@@ -23,6 +23,6 @@ const TransactionHistorySchema = new Schema({
 })
 
 module.exports = new mongoose.model(
-  'TransactionHistory',
+  'TransactionDetail',
   TransactionHistorySchema
 )

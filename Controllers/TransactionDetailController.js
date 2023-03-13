@@ -1,8 +1,8 @@
-const { TransactionHistoryModel, InvoiceModel } = require('../Models')
+const { TransactionDetailModel, InvoiceModel } = require('../Models')
 
 // Get all transaction detail
 exports.getAllTransactionDetails = (req, res) => {
-  TransactionHistoryModel.find({})
+  TransactionDetailModel.find({})
     .then((result) => {
       res.status(200).json({ data: result })
     })
@@ -14,7 +14,7 @@ exports.getAllTransactionDetails = (req, res) => {
 // Get single transaction detail
 exports.getSingleTransactionDetail = (req, res) => {
   const { transactionId } = req.body
-  TransactionHistoryModel.findById(transactionId)
+  TransactionDetailModel.findById(transactionId)
     .then((result) => {
       res.status(200).json({ data: result })
     })
@@ -31,7 +31,7 @@ exports.addTransactionDetail = async (req, res) => {
   const { invoiceRefId, amount, remittanceId, type } = data
 
   // Constructing and saving a new transaction detail in db
-  const newTransactionDetail = await new TransactionHistoryModel({
+  const newTransactionDetail = await new TransactionDetailModel({
     invoiceRefId,
     amount,
     remittanceId,
@@ -62,7 +62,7 @@ exports.updateTransactionDetail = (req, res) => {
     }
   }
 
-  TransactionHistoryModel.findByIdAndUpdate(transactionId, {
+  TransactionDetailModel.findByIdAndUpdate(transactionId, {
     ...data,
     modifiedOn: Date.now(),
   })

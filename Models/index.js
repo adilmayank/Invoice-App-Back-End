@@ -1,13 +1,13 @@
-const CustomerModel = require('./CustomersModel')
+const CustomerModel = require('./CustomerModel')
 const InvoiceModel = require('./InvoiceModel')
 const QuotationModel = require('./QuotationModel')
 const ProductModel = require('./ProductModel')
-const TransactionHistoryModel = require('./TransactionHistoryModel')
+const TransactionDetailModel = require('./TransactionDetailModel')
 
 module.exports = {
   CustomerModel,
   InvoiceModel,
   QuotationModel,
   ProductModel,
-  TransactionHistoryModel,
+  TransactionDetailModel,
 }

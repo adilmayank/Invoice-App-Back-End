@@ -12,13 +12,13 @@ const cors = require('cors')
 const mongoose = require('mongoose')
 
 const {
-  CustomersRoutes: customerRoutes,
-  ProductsRoutes: productRoutes,
-  AccountUserRoutes: accountUserRoutes,
-  InvoicesRoutes: invoicesRoutes,
-  QuotationsRoutes: quotationRoutes,
-  TransactionHistoryRoutes: transactionHistoryRoutes,
-} = require('./Routes')
+  CustomerRouter: customerRouter,
+  ProductRouter: productRouter,
+  AccountUserRouter: accountUserRouter,
+  InvoiceRouter: invoiceRouter,
+  QuotationRouter: quotationRouter,
+  TransactionDetailRouter: transactionDetailRouter,
+} = require('./Routers')
 
 const { ApplicationLevelAuthentication } = require('./Middlewares')
 
@@ -113,22 +113,22 @@ app.post('/api/v1/generateExcel', (req, res) => {
 app.use(ApplicationLevelAuthentication)
 
 // To handle Customer Routing and Logic
-app.use(customerRoutes)
+app.use(customerRouter)
 
 // To handle Product Routing and Logic
-app.use(productRoutes)
+app.use(productRouter)
 
 // To handle Account User Routing and Logic
-app.use(accountUserRoutes)
+app.use(accountUserRouter)
 
 // To handle Invoices Routing and Logic
-app.use(invoicesRoutes)
+app.use(invoiceRouter)
 
 // To handle Quotations Routing and Logic
-app.use(quotationRoutes)
+app.use(quotationRouter)
 
 // To handle Transaction History Routing and Logic
-app.use(transactionHistoryRoutes)
+app.use(transactionDetailRouter)
 
 app.get('*', (req, res) => {
   res.send('No route exists')
