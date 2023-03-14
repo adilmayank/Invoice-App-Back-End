@@ -46,6 +46,6 @@ router.patch(
 )
 
 // Delete quotation
-router.patch(`${BASE_URL}/deleteQuotation`, QuotationController.deleteQuotation)
+router.delete(`${BASE_URL}/deleteQuotation`, QuotationController.deleteQuotation)
 
 module.exports = router

@@ -15,19 +15,24 @@ const CustomerSchema = new Schema({
   placeOfDelivery: {
     type: String,
     required: false,
-    maxLength: 20,
+    maxLength: 200,
     default: this.addressLineCity,
   },
   email: { type: String, required: true },
   businessIdentityType: { type: String, required: true },
-  businessIdentityNumber: { type: String, required: true, unique: true, dropDups: true },
+  businessIdentityNumber: {
+    type: String,
+    required: true,
+    unique: true,
+    dropDups: true,
+  },
   paymentTerms: {
     type: String,
     enum: ['COD', 'CBD', 'EOM', 'CIA', 'PIA', '7D', '14D', '1M'],
     default: 'CIA',
   },
-  createdOn: {type: Date, default: Date.now()},
-  modifiedOn: {type: Date, default: Date.now()},
+  createdOn: { type: Date, default: Date.now() },
+  modifiedOn: { type: Date, default: Date.now() },
 })
 
 module.exports = new mongoose.model('Customer', CustomerSchema)

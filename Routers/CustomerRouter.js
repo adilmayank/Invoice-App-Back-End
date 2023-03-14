@@ -20,7 +20,7 @@ router.patch(
 )
 
 // Delete single customer
-router.patch(
+router.delete(
   `${BASE_URL}/deleteCustomer`,
   CustomerController.deleteSingleCustomer
 )

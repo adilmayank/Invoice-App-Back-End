@@ -17,7 +17,7 @@ router.get(
 router.patch(`${BASE_URL}/updateProduct`, ProductController.updateSingleProduct)
 
 // Delete Single Route
-router.patch(`${BASE_URL}/deleteProduct`, ProductController.deleteSingleProduct)
+router.delete(`${BASE_URL}/deleteProduct`, ProductController.deleteSingleProduct)
 
 // Create a product
 router.post(`${BASE_URL}/createProduct`, ProductController.createProduct)

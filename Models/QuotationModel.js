@@ -6,7 +6,7 @@ const { Schema } = mongoose
 const QuotationSchema = new Schema({
   quotationTo: {
     type: Schema.Types.ObjectId,
-    ref: 'Customers',
+    ref: 'Customer',
     required: true,
   },
   quotationNumber: { type: String, index: true, required: true },

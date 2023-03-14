@@ -39,6 +39,7 @@ exports.updateSingleCustomer = (req, res) => {
     phoneCountryCode: data.phoneCountryCode,
     placeOfDelivery: data.placeOfDelivery,
     email: data.email,
+    paymentTerms: data.paymentTerms,
     businessIdentityType: data.businessIdentityType,
     businessIdentityNumber: data.businessIdentityNumber,
   }
@@ -85,6 +86,7 @@ exports.createSingleCustomer = (req, res) => {
     email: email,
     businessIdentityType: businessIdentityType,
     businessIdentityNumber: businessIdentityNumber,
+    paymentTerms: paymentTerms,
   } = data
 
   const newRecord = new CustomerModel({
@@ -99,6 +101,7 @@ exports.createSingleCustomer = (req, res) => {
     phoneCountryCode,
     placeOfDelivery,
     email,
+    paymentTerms,
     businessIdentityType,
     businessIdentityNumber,
   })

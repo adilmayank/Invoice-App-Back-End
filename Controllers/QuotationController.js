@@ -40,8 +40,13 @@ exports.getSingleQuotation = (req, res, next) => {
 }
 
 exports.updateSingleQuotation = (req, res) => {
-  const { quotationId, quotationTo, products, taxComponents, quotationStatus } =
-    req.body
+  const {
+    quotationId,
+    data: { quotationTo, products, taxComponents, quotationStatus },
+  } = req.body
+
+  console.log(quotationTo, products, taxComponents, quotationStatus)
+
   QuotationModel.findByIdAndUpdate(
     quotationId,
     {
@@ -140,6 +145,12 @@ exports.sendQuotation = (req, res) => {
     },
     { new: true, runValidators: true }
   )
+    .then((result) => {
+      res.status(200).json({ data: result })
+    })
+    .catch((err) => {
+      res.status(500).json({ error: err })
+    })
 }
 
 exports.convertToInvoice = async (req, res) => {
@@ -149,7 +160,7 @@ exports.convertToInvoice = async (req, res) => {
   await quotationResult.save()
   const invoiceNumber = await createInvoiceNumber()
   new InvoiceModel({
-    refQuotation: quotationId,
+    quotationRefId: quotationId,
     invoiceNumber: invoiceNumber,
   })
     .save()
