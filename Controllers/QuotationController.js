@@ -39,13 +39,16 @@ exports.getSingleQuotation = (req, res, next) => {
     })
 }
 
-exports.updateSingleQuotation = (req, res) => {
+exports.updateSingleQuotation = async (req, res) => {
   const {
     quotationId,
-    data: { quotationTo, products, taxComponents, quotationStatus },
+    data: {
+      quotationTo,
+      products,
+      taxComponents,
+      quotationStatus,
+    },
   } = req.body
-
-  console.log(quotationTo, products, taxComponents, quotationStatus)
 
   QuotationModel.findByIdAndUpdate(
     quotationId,

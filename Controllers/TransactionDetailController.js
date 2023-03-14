@@ -38,23 +38,13 @@ exports.addTransactionDetail = async (req, res) => {
     type,
   }).save()
 
-  // Getting the object id of the newly created document
-  const transactionDetailId = newTransactionDetail._id
-
-  // Pushing the transaction detail id to the Payment History subdocument of the appropriate Invoice Document
-  const InvoiceQueryResult = await InvoiceModel.findById(invoice)
-  InvoiceQueryResult.paymentHistory.push(transactionDetailId)
-
-  // Saving the Invoice document
-  await InvoiceQueryResult.save()
-
   res.status(201).json({ data: newTransactionDetail })
   // res.send('Payment history created.')
 }
 
 // Update transaction detail
 exports.updateTransactionDetail = (req, res) => {
-  const { transactionId, data } = req.body
+  const { transactionDetailId, data } = req.body
 
   for (key of Object.keys(data)) {
     if (key == 'invoiceRefId') {
@@ -62,10 +52,27 @@ exports.updateTransactionDetail = (req, res) => {
     }
   }
 
-  TransactionDetailModel.findByIdAndUpdate(transactionId, {
-    ...data,
-    modifiedOn: Date.now(),
-  })
+  TransactionDetailModel.findByIdAndUpdate(
+    transactionDetailId,
+    {
+      ...data,
+      modifiedOn: Date.now(),
+    },
+    { new: true, runValidators: true }
+  )
+    .then((result) => {
+      res.status(200).json({ data: result })
+    })
+    .catch((err) => {
+      res.status(500).json({ error: err })
+    })
+}
+
+// Delete transaction detail
+exports.deleteTransactionDetail = (req, res) => {
+  const { transactionDetailId } = req.body
+
+  TransactionDetailModel.findByIdAndRemove(transactionDetailId)
     .then((result) => {
       res.status(200).json({ data: result })
     })

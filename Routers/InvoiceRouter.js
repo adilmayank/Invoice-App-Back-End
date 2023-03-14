@@ -28,12 +28,6 @@ router.patch(
 // submit invoice
 router.patch('/api/v1/invoice/submitInvoice', InvoiceController.submitInvoice)
 
-// remove transaction detail item
-router.patch(
-  '/api/v1/invoice/removeTransactionDetail',
-  InvoiceController.removeTransactionDetail
-)
-
 // download invoice
 router.get('/api/v1/invoice/downloadInvoice', InvoiceController.downloadInvoice)
 

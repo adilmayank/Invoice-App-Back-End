@@ -9,7 +9,7 @@ const TransactionHistorySchema = new Schema({
     required: true,
   },
   amount: { type: Number, min: 0, required: true },
-  remittanceId: { type: String, required: true, unique: true },
+  remittanceId: { type: String, required: true },
   paymentDate: { type: Date, required: true, default: Date.now() },
   type: {
     type: String,

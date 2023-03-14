@@ -28,4 +28,10 @@ router.post(
   TransactionDetailController.addTransactionDetail
 )
 
+// Delete a transaction detail
+router.delete(
+  `${BASE_URL}/deleteTransactionDetail`,
+  TransactionDetailController.deleteTransactionDetail
+)
+
 module.exports = router

@@ -107,29 +107,6 @@ exports.submitInvoice = (req, res) => {
     })
 }
 
-exports.removeTransactionDetail = (req, res) => {
-  const { invoiceId, transactionDetailId } = req.body
-  console.log(invoiceId, transactionDetailId)
-
-  InvoiceModel.findById(invoiceId).then((result) => {
-    result.paymentHistory.pull(transactionDetailId)
-    TransactionDetailModel.findByIdAndRemove(transactionDetailId)
-      .then(() => {
-        result
-          .save()
-          .then(() => {
-            res.status(200).json({ data: result, modifiedOn: Date.now() })
-          })
-          .catch((err) => {
-            res.status(500).json({ error: err })
-          })
-      })
-      .catch((err) => {
-        res.status(500).json({ error: err })
-      })
-  })
-}
-
 // Only this is supposed to work in first version
 exports.downloadInvoice = (req, res) => {
   res.send('Download Invoice : Not Implemented')
