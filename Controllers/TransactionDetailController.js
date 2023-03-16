@@ -2,9 +2,16 @@ const { TransactionDetailModel, InvoiceModel } = require('../Models')
 
 // Get all transaction detail
 exports.getAllTransactionDetails = (req, res) => {
-  TransactionDetailModel.find({})
+  const returningProperties = '_id invoiceRefId amount type paymentDate'
+  TransactionDetailModel.find({}, returningProperties)
     .then((result) => {
-      res.status(200).json({ data: result })
+      if (!result) {
+        res.status(200).json({ data: null, msg: 'no records found', count: 0 })
+      } else {
+        res
+          .status(200)
+          .json({ data: result, msg: 'success', count: result.length })
+      }
     })
     .catch((err) => {
       res.status(500).json({ error: err })
@@ -13,43 +20,64 @@ exports.getAllTransactionDetails = (req, res) => {
 
 // Get single transaction detail
 exports.getSingleTransactionDetail = (req, res) => {
-  const { transactionId } = req.body
-  TransactionDetailModel.findById(transactionId)
+  const { transactionId } = req.params
+  const returningProperties =
+    '_id invoiceRefId amount remittanceId paymentDate type comments'
+  TransactionDetailModel.findById(transactionId, returningProperties)
     .then((result) => {
-      res.status(200).json({ data: result })
+      if (!result) {
+        res.status(200).json({ data: null, msg: 'no record found' })
+      } else {
+        res.status(200).json({ data: result, msg: 'success' })
+      }
     })
     .catch((err) => {
-      res.status(500).json({ error: err })
+      res.status(500).json({ error: err, msg: 'error' })
     })
 }
 
 // Add/Create transaction detail
-exports.addTransactionDetail = async (req, res) => {
+exports.addTransactionDetail = (req, res) => {
   // Fetching data from request body
   const { data } = req.body
 
   const { invoiceRefId, amount, remittanceId, type } = data
 
   // Constructing and saving a new transaction detail in db
-  const newTransactionDetail = await new TransactionDetailModel({
+  const newRecord = new TransactionDetailModel({
     invoiceRefId,
     amount,
     remittanceId,
     type,
   }).save()
-
-  res.status(201).json({ data: newTransactionDetail })
-  // res.send('Payment history created.')
+  newRecord
+    .then((result) => {
+      if (!result) {
+        res.status(200).json({ data: null, msg: 'no record found' })
+      } else {
+        const { _id } = result
+        res.status(200).json({ data: { _id }, msg: 'success' })
+      }
+    })
+    .catch((err) => {
+      res.status(500).json({ error: err, msg: 'error' })
+    })
 }
 
 // Update transaction detail
 exports.updateTransactionDetail = (req, res) => {
-  const { transactionDetailId, data } = req.body
+  const {
+    transactionDetailId,
+    data: { invoiceRefId, amount, remittanceId, paymentDate, type, comments },
+  } = req.body
 
-  for (key of Object.keys(data)) {
-    if (key == 'invoiceRefId') {
-      delete data[key]
-    }
+  const data = {
+    invoiceRefId,
+    amount,
+    remittanceId,
+    paymentDate,
+    type,
+    comments,
   }
 
   TransactionDetailModel.findByIdAndUpdate(
@@ -61,10 +89,15 @@ exports.updateTransactionDetail = (req, res) => {
     { new: true, runValidators: true }
   )
     .then((result) => {
-      res.status(200).json({ data: result })
+      if (!result) {
+        res.status(200).json({ data: null, msg: 'no record found' })
+      } else {
+        const { _id } = result
+        res.status(200).json({ data: { _id }, msg: 'success' })
+      }
     })
     .catch((err) => {
-      res.status(500).json({ error: err })
+      res.status(500).json({ error: err, msg: 'error' })
     })
 }
 
@@ -74,7 +107,11 @@ exports.deleteTransactionDetail = (req, res) => {
 
   TransactionDetailModel.findByIdAndRemove(transactionDetailId)
     .then((result) => {
-      res.status(200).json({ data: result })
+      if (!result) {
+        res.status(200).json({ data: null, msg: 'no record found' })
+      } else {
+        res.status(200).json({ data: null, msg: 'success' })
+      }
     })
     .catch((err) => {
       res.status(500).json({ error: err })
