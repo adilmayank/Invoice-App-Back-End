@@ -1,26 +1,37 @@
 const { CustomerModel } = require('../Models')
 
 exports.getAllCustomers = (req, res) => {
-  const allRecords = CustomerModel.find({})
+  const propertiesToReturn = '_id businessName contactPersonName'
+  const allRecords = CustomerModel.find({}, propertiesToReturn)
   allRecords
     .then((result) => {
-      res.status(200).json({ data: result })
+      if (!result) {
+        res.status(200).json({ data: null, msg: 'no records found', count: 0 })
+      } else {
+        res
+          .status(200)
+          .json({ data: result, msg: 'success', count: result.length })
+      }
     })
     .catch((err) => {
-      res.status(500).json({ error: err })
+      res.status(500).json({ error: err, msg: 'error' })
     })
 }
 
 exports.getSingleCustomer = (req, res) => {
   const { customerId } = req.params
-
-  const singleRecord = CustomerModel.find({ _id: customerId })
+  const propertiesToReturn = '-createdOn -modifiedOn -__v'
+  const singleRecord = CustomerModel.findById(customerId, propertiesToReturn)
   singleRecord
     .then((result) => {
-      res.status(200).json({ data: result })
+      if (!result) {
+        res.status(200).json({ data: null, msg: 'no record found' })
+      } else {
+        res.status(200).json({ data: result, msg: 'success' })
+      }
     })
     .catch((err) => {
-      res.status(500).json({ error: err })
+      res.status(500).json({ error: err, msg: 'error' })
     })
 }
 
@@ -50,10 +61,15 @@ exports.updateSingleCustomer = (req, res) => {
     { runValidators: true, new: true }
   )
     .then((result) => {
-      res.status(200).json({ data: result })
+      if (!result) {
+        res.status(200).json({ data: null, msg: 'no record found' })
+      } else {
+        const { _id, businessName } = result
+        res.status(200).json({ data: { _id, businessName }, msg: 'success' })
+      }
     })
     .catch((err) => {
-      res.status(500).json({ error: err })
+      res.status(500).json({ error: err, msg: 'error' })
     })
 }
 
@@ -62,10 +78,14 @@ exports.deleteSingleCustomer = (req, res) => {
 
   CustomerModel.findByIdAndRemove(customerId)
     .then((result) => {
-      res.status(200).json({ data: result })
+      if (!result) {
+        res.status(200).json({ data: null, msg: 'no record found' })
+      } else {
+        res.status(200).json({ data: result, msg: 'success' })
+      }
     })
     .catch((err) => {
-      res.status(500).json({ error: err })
+      res.status(500).json({ error: err, msg: 'error' })
     })
 }
 
@@ -109,10 +129,11 @@ exports.createSingleCustomer = (req, res) => {
   newRecord
     .save()
     .then((result) => {
-      res.status(201).json({ data: result })
+      const { _id, businessName } = result
+      res.status(201).json({ data: { _id, businessName }, msg: 'success' })
     })
     .catch((err) => {
       console.log(err)
-      res.status(500).json({ error: err })
+      res.status(500).json({ error: err, msg: 'error' })
     })
 }
