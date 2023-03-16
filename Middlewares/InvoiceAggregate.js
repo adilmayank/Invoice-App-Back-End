@@ -6,5 +6,5 @@ exports.InvoiceAggregate = (req, res) => {
   const {
     locals: { responseData },
   } = res
-  res.json({ data: responseData })
+  res.json({ data: responseData, msg: 'success' })
 }

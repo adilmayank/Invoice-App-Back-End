@@ -9,28 +9,48 @@ const {
 
 // Get all invoices need much less data than get single invoice, need to reduce the data later
 exports.getAllInvoices = (req, res) => {
-  const allRecords = InvoiceModel.find({}).populate({
-    path: 'quotationRefId',
-    populate: { path: 'quotationTo' },
-  })
+  const returningProperties =
+    '_id invoiceNumber invoiceDate invoiceStatus paymentStatus'
+
+  const allRecords = InvoiceModel.find({}, returningProperties)
 
   allRecords
     .then((result) => {
-      res.status(200).json({ data: result })
+      if (!result) {
+        res
+          .status(200)
+          .json({ data: null, msg: 'no record found', count: null })
+      } else {
+        res
+          .status(200)
+          .json({ data: result, msg: 'success', count: result.length })
+      }
     })
     .catch((err) => {
       console.log(err)
-      res.status(500).json({ error: err })
+      res.status(500).json({ error: err, msg: 'error' })
     })
 }
 
 exports.getSingleInvoice = (req, res, next) => {
+  const invoiceReturningProperties = '-createdOn -modifiedOn -__v'
+  const quotationReturningProperties = '_id quotationTo products taxComponents'
+  const productReturningProperties =
+    '_id name stockCode description unitPrice hsnNumber'
+  const customerReturningProperties = 'businessName'
+
   const { invoiceId } = req.params
-  const allRecords = InvoiceModel.findById(invoiceId)
+  const allRecords = InvoiceModel.findById(
+    invoiceId,
+    invoiceReturningProperties
+  )
     .populate({
       path: 'quotationRefId',
-      populate: { path: 'quotationTo' },
-      populate: { path: 'products.product' },
+      select: quotationReturningProperties,
+      populate: [
+        { path: 'quotationTo', select: customerReturningProperties },
+        { path: 'products.product', select: productReturningProperties },
+      ],
     })
     .populate({
       path: 'previousPayments',
@@ -38,58 +58,110 @@ exports.getSingleInvoice = (req, res, next) => {
 
   allRecords
     .then((result) => {
-      res.locals.responseData = result
-      next()
+      if (!result) {
+        res.status(200).json({ data: null, msg: 'no record found' })
+      } else {
+        res.locals.responseData = result
+        next()
+      }
     })
     .catch((err) => {
       console.log(err)
-      res.status(500).json({ error: err })
+      res.status(500).json({ error: err, msg: 'error' })
     })
 }
 
 exports.updateSingleInvoice = (req, res) => {
   const { invoiceId, data } = req.body
+  const { paymentDueDate, expectedDeliveryDate, discountComponent } = data
+
+  const dataToSend = { paymentDueDate, expectedDeliveryDate, discountComponent }
 
   const allRecords = InvoiceModel.findOneAndUpdate(
     { _id: invoiceId },
-    { ...data, modifiedOn: Date.now(), invoiceStatus: 'notSubmitted' },
+    { ...dataToSend, modifiedOn: Date.now(), invoiceStatus: 'notSubmitted' },
     { new: true, runValidators: true }
   )
   allRecords
     .then((result) => {
-      res.status(200).json({ data: result })
+      if (!result) {
+        res.status(200).json({ data: null, msg: 'no record found' })
+      } else {
+        const { _id } = result
+        res.status(200).json({ data: { _id }, msg: 'success' })
+      }
     })
     .catch((err) => {
-      res.status(500).json({ error: err })
+      res.status(500).json({ error: err, msg: 'error' })
     })
 }
 
-exports.convertInvoiceToQuotation = async (req, res) => {
+exports.convertInvoiceToQuotation = (req, res) => {
   // Get invoice id fron request
   // Get quotation id from query
-  // Update quotation status to not accepted
+  // Update quotation status to not sent
   // Delete current invoice from db by invoice Id
 
   const { invoiceId } = req.body
-  console.log(`Invoice Id: ${invoiceId}`)
-  const quotationQuery = await InvoiceModel.findById(invoiceId).populate({
-    path: 'refQuotation',
-  })
-  const quotationId = quotationQuery.refQuotation._id
-  console.log(`Quotation Id: ${quotationId}`)
 
-  await QuotationModel.findByIdAndUpdate(
-    quotationId,
-    { quotationStatus: 'notSent', modifiedOn: Date.now() },
-    { runValidators: true, new: true }
-  )
-  console.log('quotation status upated')
-  await InvoiceModel.findByIdAndDelete(invoiceId)
-  console.log('invoice deleted')
-
-  res.json({
-    msg: 'Invoice converted to Quotation, current invoice record deleted',
+  InvoiceModel.findById(invoiceId).then((result) => {
+    if (!result) {
+      res.status(404).json({ data: null, msg: 'no record found' })
+    } else {
+      const quotationId = result.quotationRefId.toString()
+      QuotationModel.findByIdAndUpdate(
+        quotationId,
+        {
+          quotationStatus: 'notSent',
+          modifiedOn: Date.now(),
+        },
+        { new: true, runValidators: true }
+      ).then((quotationResult) => {
+        if (!quotationResult) {
+          res.status(404).json({ data: null, msg: 'no record found' })
+        } else {
+          InvoiceModel.findByIdAndDelete(invoiceId).then((deletedInvoice) => {
+            if (!deletedInvoice) {
+              res.status(404).json({ data: null, msg: 'no record found' })
+            } else {
+              res.status(200).json({ data: { quotationId }, msg: 'success' })
+            }
+          })
+        }
+      })
+    }
   })
+
+  // InvoiceModel.findById(invoiceId)
+  //   .populate({
+  //     path: 'quotationRefId',
+  //   })
+  //   .then((result) => {
+  //     if (!result) {
+  //       res.status(200).json({ data: null, msg: 'no record found' })
+  //     } else {
+  //       const quotationId = result.quotationRefId._id
+  //       QuotationModel.findByIdAndUpdate(
+  //         quotationId,
+  //         { quotationStatus: 'notSent', modifiedOn: Date.now() },
+  //         { runValidators: true, new: true }
+  //       )
+  //         .then((quotationResult) => {
+  //           if (!quotationResult) {
+  //             res.status(200).json({ data: null, msg: 'no record found' })
+  //           } else {
+  //             InvoiceModel.findByIdAndDelete(invoiceId)
+  //             res.status(200).json({ data: { quotationId }, msg: 'success' })
+  //           }
+  //         })
+  //         .catch((err) => {
+  //           res.status(500).json({ error: err, msg: 'error' })
+  //         })
+  //     }
+  //   })
+  //   .catch((err) => {
+  //     res.status(500).json({ error: err, msg: 'error' })
+  //   })
 }
 
 exports.submitInvoice = (req, res) => {
@@ -100,10 +172,15 @@ exports.submitInvoice = (req, res) => {
     { runValidators: true, new: true }
   )
     .then((result) => {
-      res.status(200).json({ data: result })
+      if (!result) {
+        res.status(200).json({ data: null, msg: 'no record found' })
+      } else {
+        const { _id, invoiceStatus } = result
+        res.status(200).json({ data: { _id, invoiceStatus }, msg: 'success' })
+      }
     })
     .catch((err) => {
-      res.status(500).json({ error: err })
+      res.status(500).json({ error: err, msg: 'error' })
     })
 }
 
@@ -132,10 +209,15 @@ exports.sendInvoice = (req, res) => {
     { runValidators: true, new: true }
   )
     .then((result) => {
-      res.status(200).json({ data: result })
+      if (!result) {
+        res.status(200).json({ data: null, msg: 'no record found' })
+      } else {
+        const { _id, invoiceStatus } = result
+        res.status(200).json({ data: { _id, invoiceStatus }, msg: 'success' })
+      }
     })
     .catch((err) => {
-      res.status(500).json({ error: err })
+      res.status(500).json({ error: err, msg: 'error' })
     })
 }
 
@@ -147,11 +229,14 @@ exports.submitAndSendInvoice = (req, res) => {
     { runValidators: true, new: true }
   )
     .then((result) => {
-      res
-        .status(200)
-        .json({ data: result, msg: 'Quotation sent to the cusotmer' })
+      if (!result) {
+        res.status(200).json({ data: null, msg: 'no record found' })
+      } else {
+        const { _id, invoiceStatus } = result
+        res.status(200).json({ data: { _id, invoiceStatus }, msg: 'success' })
+      }
     })
     .catch((err) => {
-      res.status(500).json({ error: err })
+      res.status(500).json({ error: err, msg: 'error' })
     })
 }
