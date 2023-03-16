@@ -1,53 +1,72 @@
 const { QuotationModel, InvoiceModel } = require('../Models')
 
 exports.getAllQuotations = (req, res) => {
-  const allRecords = QuotationModel.find({})
-    .populate({
-      path: 'quotationTo',
-      select: 'businessName contactPersonName email paymentTerms',
-    })
-    .populate({ path: 'products.product' })
+  const quotationReturningProperties =
+    '_id quotationTo quotationNumber quotationDate quotationStatus'
+  const customerReturningProperties = 'businessName'
+
+  const allRecords = QuotationModel.find(
+    {},
+    quotationReturningProperties
+  ).populate({
+    path: 'quotationTo',
+    select: customerReturningProperties,
+  })
+  // .populate({ path: 'products.product' })
 
   allRecords
     .then((result) => {
-      res.status(200).json({ data: result })
+      if (!result) {
+        res
+          .status(200)
+          .json({ data: null, msg: 'no records found', count: null })
+      } else {
+        res
+          .status(200)
+          .json({ data: result, msg: 'success', count: result.length })
+      }
     })
     .catch((err) => {
-      console.log(err)
-      res.status(500).json({ error: err })
+      res.status(500).json({ error: err, msg: 'error' })
     })
 }
 
 exports.getSingleQuotation = (req, res, next) => {
+  const quotationReturningProperties =
+    '_id quotationTo quotationNumber quotationDate quotationStatus products taxComponents emailSentOn'
+  const customerReturningProperties = '_id businessName'
+  const productReturningProperties =
+    '_id name stockCode description unitPrice hsnNumber'
   const { quotationId } = req.params
-  const singleRecord = QuotationModel.findById(quotationId)
+  const singleRecord = QuotationModel.findById(
+    quotationId,
+    quotationReturningProperties
+  )
     .populate({
       path: 'quotationTo',
-      select: 'businessName contactPersonName email paymentTerms',
+      select: customerReturningProperties,
     })
-    .populate({ path: 'products.product' })
+    .populate({ path: 'products.product', select: productReturningProperties })
 
   singleRecord
     .then((result) => {
-      res.locals.responseData = result
-      next()
-      // res.status(200).json({ data: { result } })
+      if (!result) {
+        res.status(200).json({ data: null, msg: 'not record found' })
+      } else {
+        res.locals.responseData = result
+        next()
+        // res.status(200).json({ data: { result } })
+      }
     })
     .catch((err) => {
-      console.log(err)
-      res.status(500).json({ error: err })
+      res.status(500).json({ error: err, msg: 'error' })
     })
 }
 
 exports.updateSingleQuotation = async (req, res) => {
   const {
     quotationId,
-    data: {
-      quotationTo,
-      products,
-      taxComponents,
-      quotationStatus,
-    },
+    data: { quotationTo, products, taxComponents, quotationStatus },
   } = req.body
 
   QuotationModel.findByIdAndUpdate(
@@ -62,10 +81,15 @@ exports.updateSingleQuotation = async (req, res) => {
     { runValidators: true, new: true }
   )
     .then((result) => {
-      res.status(200).json({ data: result })
+      if (!result) {
+        res.status(200).json({ data: null, msg: 'no record found' })
+      } else {
+        const { _id } = result
+        res.status(200).json({ data: { _id }, msg: 'success' })
+      }
     })
     .catch((err) => {
-      res.status(500).json({ error: err })
+      res.status(500).json({ error: err, msg: 'error' })
     })
 }
 
@@ -85,10 +109,15 @@ exports.createQuotation = async (req, res) => {
   newRecord
     .save()
     .then((result) => {
-      res.status(201).json({ data: result })
+      if (!result) {
+        res.status(201).json({ data: null, msg: 'no record found' })
+      } else {
+        const { _id } = result
+        res.status(201).json({ data: { _id }, msg: 'success' })
+      }
     })
     .catch((err) => {
-      res.status(500).json({ error: err })
+      res.status(500).json({ error: err, msg: 'error' })
     })
 }
 
@@ -111,20 +140,33 @@ exports.updateQuotationStatus = (req, res) => {
   // changing quotation status is just indicative of a state change.
   const { quotationStatus } = data
 
-  // promise chaining, finally one "catch" to catch errors, most probably validation error in this case ;)
-  const queryResult = QuotationModel.findById(quotationId)
-  queryResult
-    .then((result) => {
-      result.quotationStatus = quotationStatus
-      result.modifiedOn = Date.now()
-      return result.save()
-    })
-    .then((data) => {
-      res.status(200).json({ data: data })
-    })
-    .catch((err) => {
-      res.status(500).json({ error: err })
-    })
+  if (quotationStatus === 'convertedToInvoice') {
+    res
+      .status(400)
+      .json({ data: null, msg: 'can not convert to invoice like this' })
+  } else {
+    // Updating the quotation status and sending response back to client
+    QuotationModel.findByIdAndUpdate(
+      quotationId,
+      {
+        quotationStatus,
+        modifiedOn: Date.now(),
+      },
+      { new: true, runValidators: true }
+    )
+      .then((result) => {
+        if (!result) {
+          res.status(200).json({ data: null, msg: 'no record found' })
+        } else {
+          const { _id, quotationStatus: updatedQuotationStatus } = result
+          const returningProperties = { _id, updatedQuotationStatus }
+          res.status(200).json({ data: returningProperties, msg: 'success' })
+        }
+      })
+      .catch((err) => {
+        res.status(500).json({ error: err, msg: 'error' })
+      })
+  }
 }
 
 exports.downloadQuotation = (req, res) => {
@@ -149,30 +191,52 @@ exports.sendQuotation = (req, res) => {
     { new: true, runValidators: true }
   )
     .then((result) => {
-      res.status(200).json({ data: result })
+      if (!result) {
+        res.status(200).json({ data: null, msg: 'no record found' })
+      } else {
+        const { _id, quotationStatus } = result
+        const returningProperties = { _id, quotationStatus }
+        res.status(200).json({ data: returningProperties, msg: 'success' })
+      }
     })
     .catch((err) => {
-      res.status(500).json({ error: err })
+      res.status(500).json({ error: err, msg: 'error' })
     })
 }
 
 exports.convertToInvoice = async (req, res) => {
   const { quotationId } = req.body
-  let quotationResult = await QuotationModel.findById(quotationId)
-  quotationResult.quotationStatus = 'convertedToInvoice'
-  await quotationResult.save()
-  const invoiceNumber = await createInvoiceNumber()
-  new InvoiceModel({
+
+  // Check whether an invoice already refers to this quotationId
+  const doesQuotationAlreadyInvoiced = await InvoiceModel.findOne({
     quotationRefId: quotationId,
-    invoiceNumber: invoiceNumber,
   })
-    .save()
-    .then((result) => {
-      res.status(201).json({ data: result })
+  if (doesQuotationAlreadyInvoiced) {
+    res
+      .status(200)
+      .json({ data: null, msg: 'quotation already converted to invoice' })
+  } else {
+    QuotationModel.findByIdAndUpdate(
+      quotationId,
+      { quotationStatus: 'convertedToInvoice' },
+      { new: true, runValidators: true }
+    ).catch((err) => {
+      res.status(500).json({ error: err, msg: 'error' })
     })
-    .catch((err) => {
-      res.status(500).json({ error: err })
+    const invoiceNumber = await createInvoiceNumber()
+    new InvoiceModel({
+      quotationRefId: quotationId,
+      invoiceNumber: invoiceNumber,
     })
+      .save()
+      .then((result) => {
+        const { _id } = result
+        res.status(201).json({ data: { _id }, msg: 'success' })
+      })
+      .catch((err) => {
+        res.status(500).json({ error: err, msg: 'error' })
+      })
+  }
 }
 
 const createInvoiceNumber = async () => {
