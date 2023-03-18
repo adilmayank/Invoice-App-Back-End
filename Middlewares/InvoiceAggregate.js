@@ -2,9 +2,12 @@
 // Taxes on individual products, as well as a total tax, sub total amount, grand total, balance due etc are aggregated here
 // Some new properties will be added to the response object like previous payments and balance due.
 
+const { aggregateInvoice } = require('../utils/InvoiceAggregate')
+
 exports.InvoiceAggregate = (req, res) => {
   const {
     locals: { responseData },
   } = res
+  aggregateInvoice(responseData)
   res.json({ data: responseData, msg: 'success' })
 }
