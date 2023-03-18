@@ -17,12 +17,10 @@ const InvoiceSchema = new Schema(
       default: new Date(2023, new Date().getMonth() + 2, 0),
     },
     expectedDeliveryDate: { type: Date },
-    discountComponent: [
-      {
-        discountType: { type: String },
-        discountValue: { type: Number, min: 1 },
-      },
-    ],
+    discountComponent: {
+      discountType: { type: String },
+      discountRate: { type: Number, min: 1, max: 100 },
+    },
     invoiceStatus: {
       type: String,
       enum: ['submitted', 'sent', 'notSubmitted'],
