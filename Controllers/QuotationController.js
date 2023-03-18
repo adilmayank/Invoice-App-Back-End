@@ -47,6 +47,7 @@ exports.getSingleQuotation = (req, res, next) => {
       select: customerReturningProperties,
     })
     .populate({ path: 'products.product', select: productReturningProperties })
+    .lean()
 
   singleRecord
     .then((result) => {
@@ -66,8 +67,11 @@ exports.getSingleQuotation = (req, res, next) => {
 exports.updateSingleQuotation = async (req, res) => {
   const {
     quotationId,
-    data: { quotationTo, products, taxComponents, quotationStatus },
+    data: { quotationTo, products, taxComponents },
   } = req.body
+
+  // Add extra step of validation for quotation Ids and product Ids.
+  // Not implementing it yet.
 
   QuotationModel.findByIdAndUpdate(
     quotationId,
@@ -75,7 +79,6 @@ exports.updateSingleQuotation = async (req, res) => {
       quotationTo,
       products,
       taxComponents,
-      quotationStatus,
       modifiedOn: Date.now(),
     },
     { runValidators: true, new: true }
@@ -207,10 +210,15 @@ exports.sendQuotation = (req, res) => {
 exports.convertToInvoice = async (req, res) => {
   const { quotationId } = req.body
 
-  // Check whether an invoice already refers to this quotationId
+  // Step 1 - Check whether the invoice Id for refernce actually exists or not.
+  // Not implmemented yet
+
+  // Step 2 - Check whether an invoice already refers to this quotationId
   const doesQuotationAlreadyInvoiced = await InvoiceModel.findOne({
     quotationRefId: quotationId,
   })
+  // DoesQuotationAlreadyInvoiced can not check the validity of the quotation Id itself
+  // This is to be done at step 1
   if (doesQuotationAlreadyInvoiced) {
     res
       .status(200)
@@ -231,7 +239,7 @@ exports.convertToInvoice = async (req, res) => {
       .save()
       .then((result) => {
         const { _id } = result
-        res.status(201).json({ data: { _id }, msg: 'success' })
+        res.status(201).json({ data: { invoiceId: _id }, msg: 'success' })
       })
       .catch((err) => {
         res.status(500).json({ error: err, msg: 'error' })
