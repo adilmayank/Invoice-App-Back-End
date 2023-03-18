@@ -55,6 +55,7 @@ exports.getSingleInvoice = (req, res, next) => {
     .populate({
       path: 'previousPayments',
     })
+    .lean()
 
   allRecords
     .then((result) => {
