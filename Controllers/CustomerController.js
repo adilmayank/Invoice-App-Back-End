@@ -137,3 +137,4 @@ exports.createSingleCustomer = (req, res) => {
       res.status(500).json({ error: err, msg: 'error' })
     })
 }
+  
