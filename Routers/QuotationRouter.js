@@ -11,8 +11,7 @@ router.get(`${BASE_URL}/getAllQuotations`, QuotationController.getAllQuotations)
 // Get single quotation
 router.get(
   `${BASE_URL}/getQuotation/:quotationId`,
-  QuotationController.getSingleQuotation,
-  QuotationAggregate
+  QuotationController.getSingleQuotation
 )
 
 // Create new Quotation
@@ -46,6 +45,9 @@ router.patch(
 )
 
 // Delete quotation
-router.delete(`${BASE_URL}/deleteQuotation`, QuotationController.deleteQuotation)
+router.delete(
+  `${BASE_URL}/deleteQuotation`,
+  QuotationController.deleteQuotation
+)
 
 module.exports = router

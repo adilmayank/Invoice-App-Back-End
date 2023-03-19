@@ -1,6 +1,6 @@
 // Returns ->  Void
 // Param -> quotationData from db query(leaned)
-exports.aggregateQuotation = (quotationData) => {
+exports.QuotationAggregate = (quotationData) => {
   const tempQuotationProductData = quotationData.products
   const tempQuotationTaxRateData = quotationData.taxComponents.taxRate
 

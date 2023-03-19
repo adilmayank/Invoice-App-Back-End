@@ -1,4 +1,5 @@
 const { QuotationModel, InvoiceModel } = require('../Models')
+const { QuotationAggregate } = require('../utils')
 
 exports.getAllQuotations = (req, res) => {
   const quotationReturningProperties =
@@ -54,9 +55,8 @@ exports.getSingleQuotation = (req, res, next) => {
       if (!result) {
         res.status(200).json({ data: null, msg: 'not record found' })
       } else {
-        res.locals.responseData = result
-        next()
-        // res.status(200).json({ data: { result } })
+        QuotationAggregate(result)
+        res.json({ data: result, msg: 'success' })
       }
     })
     .catch((err) => {
