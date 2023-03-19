@@ -1,4 +1,5 @@
 const { TransactionDetailModel, InvoiceModel } = require('../Models')
+const { UpdateInvoicePaymentStatus } = require('../utils')
 
 // Get all transaction detail
 exports.getAllTransactionDetails = (req, res) => {
@@ -53,10 +54,12 @@ exports.addTransactionDetail = (req, res) => {
   newRecord
     .then((result) => {
       if (!result) {
-        res.status(200).json({ data: null, msg: 'no record found' })
+        res.status(200).json({ data: null, msg: 'no record created' })
       } else {
-        const { _id } = result
-        res.status(200).json({ data: { _id }, msg: 'success' })
+        UpdateInvoicePaymentStatus(invoiceRefId).then(() => {
+          const { _id } = result
+          res.status(200).json({ data: { _id }, msg: 'success' })
+        })
       }
     })
     .catch((err) => {
@@ -92,8 +95,11 @@ exports.updateTransactionDetail = (req, res) => {
       if (!result) {
         res.status(200).json({ data: null, msg: 'no record found' })
       } else {
-        const { _id } = result
-        res.status(200).json({ data: { _id }, msg: 'success' })
+        // Update payment status
+        UpdateInvoicePaymentStatus(invoiceRefId).then(() => {
+          const { _id } = result
+          res.status(200).json({ data: { _id }, msg: 'success' })
+        })
       }
     })
     .catch((err) => {
@@ -110,7 +116,10 @@ exports.deleteTransactionDetail = (req, res) => {
       if (!result) {
         res.status(200).json({ data: null, msg: 'no record found' })
       } else {
-        res.status(200).json({ data: null, msg: 'success' })
+        const { invoiceRefId } = result
+        UpdateInvoicePaymentStatus(invoiceRefId).then(() => {
+          res.status(200).json({ data: result, msg: 'success' })
+        })
       }
     })
     .catch((err) => {
