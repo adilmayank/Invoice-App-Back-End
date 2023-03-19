@@ -1,10 +1,11 @@
 // Returns ->  Void
 // Param -> invoiceData from db query(leaned)
-exports.aggregateInvoice = (invoiceData) => {
+exports.InvoiceAggregate = (invoiceData) => {
   const tempQuotationProductData = invoiceData.quotationRefId.products
   const tempQuotationTaxRateData =
     invoiceData.quotationRefId.taxComponents.taxRate
   const invoiceDiscountRate = invoiceData.discountComponent.discountRate
+  const invoicePreviousPayments = invoiceData.previousPayments
 
   // Aggregating Products List
   const aggregatedProductList = tempQuotationProductData.map(
@@ -46,6 +47,20 @@ exports.aggregateInvoice = (invoiceData) => {
   )
   invoiceData.totalTaxAmount = totalTaxAmount
 
+  // Aggregating Previous Payments
+  let totalPreviousPayments = 0
+  if (invoicePreviousPayments.length > 0) {
+    totalPreviousPayments = invoicePreviousPayments.reduce(
+      (amount, paymentItem) => {
+        return amount + paymentItem.amount
+      },
+      0
+    )
+  }
+  invoiceData.previousPayments = totalPreviousPayments
+
   // Calculating quotation Grand Total
   invoiceData.grandTotal = totalTaxAmount + discountedSubtotal
+  invoiceData.balanceDue =
+    totalTaxAmount + discountedSubtotal - totalPreviousPayments
 }
