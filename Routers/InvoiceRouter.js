@@ -1,7 +1,6 @@
 const express = require('express')
 const router = express.Router()
 const { InvoiceController } = require('../Controllers')
-const { InvoiceAggregate } = require('../Middlewares')
 
 // get all invoices
 router.get('/api/v1/invoice/getAllInvoices', InvoiceController.getAllInvoices)
@@ -9,8 +8,7 @@ router.get('/api/v1/invoice/getAllInvoices', InvoiceController.getAllInvoices)
 // get single invoice
 router.get(
   '/api/v1/invoice/getInvoice/:invoiceId',
-  InvoiceController.getSingleInvoice,
-  InvoiceAggregate
+  InvoiceController.getSingleInvoice
 )
 
 // update single invoice

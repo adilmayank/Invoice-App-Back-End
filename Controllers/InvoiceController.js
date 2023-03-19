@@ -4,6 +4,7 @@ const {
   QuotationModel,
   TransactionDetailModel,
 } = require('../Models')
+const { InvoiceAggregate } = require('../utils')
 
 // Need to send proper status codes for all the responses
 
@@ -38,6 +39,7 @@ exports.getSingleInvoice = (req, res, next) => {
   const productReturningProperties =
     '_id name stockCode description unitPrice hsnNumber'
   const customerReturningProperties = 'businessName'
+  const previousPaymentsReturningProperties = '-createdOn -modifiedOn -__v'
 
   const { invoiceId } = req.params
   const allRecords = InvoiceModel.findById(
@@ -54,6 +56,7 @@ exports.getSingleInvoice = (req, res, next) => {
     })
     .populate({
       path: 'previousPayments',
+      select: previousPaymentsReturningProperties,
     })
     .lean()
 
@@ -62,8 +65,8 @@ exports.getSingleInvoice = (req, res, next) => {
       if (!result) {
         res.status(200).json({ data: null, msg: 'no record found' })
       } else {
-        res.locals.responseData = result
-        next()
+        InvoiceAggregate(result)
+        res.json({ data: result, msg: 'success' })
       }
     })
     .catch((err) => {
