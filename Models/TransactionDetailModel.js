@@ -17,7 +17,7 @@ const TransactionHistorySchema = new Schema({
     default: true,
     required: true,
   },
-  comments: [{ type: String, maxlength: 50 }],
+  comments: [{ type: String, maxlength: 50, createdOn: Date.now() }],
   createdOn: { type: Date, default: Date.now() },
   modifiedOn: { type: Date, default: Date.now() },
 })
