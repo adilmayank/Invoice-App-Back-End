@@ -1,5 +1,6 @@
 .env
 my-invoice.pdf
 node_modules
-/.cache/
-.VSCodeCounter
+.cache/
+logs/
+html_templates/
